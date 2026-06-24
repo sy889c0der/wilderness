@@ -1,0 +1,351 @@
+﻿<!DOCTYPE html>
+<html lang=\"en\">
+<head>
+<meta charset=\"UTF-8\">
+<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
+<title>Wilderness v1 - Misty Forest</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { overflow: hidden; background: #0a0f0a; font-family: 'Courier New', monospace; }
+canvas { display: block; width: 100vw; height: 100vh; }
+#loading {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: #0a0f0a; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; z-index: 100;
+  transition: opacity 1.5s ease;
+}
+#loading.hidden { opacity: 0; pointer-events: none; }
+#loading h1 { color: #3a5a3a; font-size: 2em; letter-spacing: 8px; margin-bottom: 30px; }
+#load-bar-outer { width: 200px; height: 2px; background: #1a2a1a; border-radius: 1px; }
+#load-bar-inner { width: 0%; height: 100%; background: #4a7a4a; border-radius: 1px; transition: width 0.3s; }
+#ui-title {
+  position: fixed; top: 30px; left: 30px; z-index: 10; color: #5a8a5a;
+  font-size: 14px; letter-spacing: 6px; opacity: 0.7;
+  text-shadow: 0 0 20px rgba(90,138,90,0.3);
+}
+#ui-hint {
+  position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+  z-index: 10; color: #3a5a3a; font-size: 11px; letter-spacing: 3px;
+  opacity: 0.5; text-align: center;
+}
+</style>
+</head>
+<body>
+<div id=\"loading\">
+  <h1>LOADING</h1>
+  <div id=\"load-bar-outer\"><div id=\"load-bar-inner\"></div></div>
+</div>
+<div id=\"ui-title\">WILDERNESS</div>
+<div id=\"ui-hint\">move mouse to explore</div>
+<script src=\"https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js\"></script>
+<script>
+(function() {
+  'use strict';
+  console.log('[Version A] Script started');
+
+  // --- Loading ---
+  const loadBar = document.getElementById('load-bar-inner');
+  const loadingEl = document.getElementById('loading');
+  function setLoad(pct) { loadBar.style.width = pct + '%'; }
+
+  // --- Scene ---
+  console.log('[Version A] Creating scene');
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x0a0f0a);
+  scene.fog = new THREE.FogExp2(0x0a1a0a, 0.025);
+  console.log('[Version A] Scene created, fog:', scene.fog.color.getHexString());
+
+  // --- Camera ---
+  console.log('[Version A] Creating camera');
+  const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 200);
+  camera.position.set(0, 3, 15);
+  camera.lookAt(0, 2, 0);
+  console.log('[Version A] Camera positioned at', camera.position.x, camera.position.y, camera.position.z);
+
+  // --- Renderer ---
+  console.log('[Version A] Creating renderer');
+  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.shadowMap.enabled = false;
+  document.body.appendChild(renderer.domElement);
+  console.log('[Version A] Renderer created, canvas size:', window.innerWidth, 'x', window.innerHeight);
+
+  setLoad(20);
+
+  // --- Lights ---
+  console.log('[Version A] Adding lights');
+  const ambientLight = new THREE.AmbientLight(0x1a3a1a, 0.4);
+  scene.add(ambientLight);
+  console.log('[Version A] Ambient light added');
+
+  const dirLight = new THREE.DirectionalLight(0x2a4a2a, 0.3);
+  dirLight.position.set(-5, 10, 5);
+  scene.add(dirLight);
+  console.log('[Version A] Directional light added');
+
+  const pointLight1 = new THREE.PointLight(0x3a6a3a, 0.5, 30);
+  pointLight1.position.set(0, 5, 0);
+  scene.add(pointLight1);
+  console.log('[Version A] Point light added');
+
+  setLoad(40);
+
+  // --- Ground ---
+  console.log('[Version A] Creating ground');
+  const groundGeo = new THREE.PlaneGeometry(100, 100, 20, 20);
+  const groundMat = new THREE.MeshPhongMaterial({
+    color: 0x0d1a0d,
+    specular: 0x000000,
+    shininess: 5
+  });
+  const ground = new THREE.Mesh(groundGeo, groundMat);
+  ground.rotation.x = -Math.PI / 2;
+  ground.position.y = -0.5;
+  scene.add(ground);
+  console.log('[Version A] Ground created');
+
+  // --- Trees ---
+  console.log('[Version A] Creating trees');
+  const trees = [];
+  const rng = (min, max) => min + Math.random() * (max - min);
+
+  function createTree(x, z, scale) {
+    const group = new THREE.Group();
+    const trunkH = rng(1.5, 2.5) * scale;
+    const trunkR = 0.08 * scale;
+
+    const trunkGeo = new THREE.CylinderGeometry(trunkR * 0.7, trunkR, trunkH, 6);
+    const trunkMat = new THREE.MeshPhongMaterial({ color: 0x1a1208, specular: 0x000000, shininess: 1 });
+    const trunk = new THREE.Mesh(trunkGeo, trunkMat);
+    trunk.position.y = trunkH / 2 - 0.5;
+    group.add(trunk);
+
+    const layers = Math.floor(rng(3, 5));
+    for (let i = 0; i < layers; i++) {
+      const coneH = rng(1.0, 1.8) * scale;
+      const coneR = rng(0.5, 1.0) * scale * (1 - i * 0.15);
+      const coneGeo = new THREE.ConeGeometry(coneR, coneH, 7);
+      const greenVal = 0x0a + Math.floor(rng(0, 0x1a));
+      const coneMat = new THREE.MeshPhongMaterial({
+        color: new THREE.Color(greenVal, greenVal + 0x1a + Math.floor(rng(0, 0x20)), greenVal),
+        specular: 0x000000, shininess: 2
+      });
+      const cone = new THREE.Mesh(coneGeo, coneMat);
+      cone.position.y = trunkH + i * coneH * 0.5;
+      group.add(cone);
+    }
+
+    group.position.set(x, 0, z);
+    group.rotation.y = rng(0, Math.PI * 2);
+    scene.add(group);
+    trees.push(group);
+    return group;
+  }
+
+  // Place trees
+  const treeCount = 8;
+  for (let i = 0; i < treeCount; i++) {
+    const angle = (i / treeCount) * Math.PI * 2 + rng(-0.3, 0.3);
+    const dist = rng(4, 18);
+    const x = Math.cos(angle) * dist;
+    const z = Math.sin(angle) * dist - 5;
+    const scale = rng(0.7, 1.3);
+    createTree(x, z, scale);
+    console.log('[Version A] Tree placed at', x.toFixed(1), z.toFixed(1), 'scale:', scale.toFixed(2));
+  }
+  setLoad(60);
+
+  // --- Fireflies ---
+  console.log('[Version A] Creating fireflies');
+  const fireflyCount = 60;
+  const fireflyGeo = new THREE.BufferGeometry();
+  const ffPositions = new Float32Array(fireflyCount * 3);
+  const ffColors = new Float32Array(fireflyCount * 3);
+  const ffSizes = new Float32Array(fireflyCount);
+  const ffData = [];
+
+  for (let i = 0; i < fireflyCount; i++) {
+    const x = rng(-15, 15);
+    const y = rng(0.5, 5);
+    const z = rng(-15, 15);
+    ffPositions[i * 3] = x;
+    ffPositions[i * 3 + 1] = y;
+    ffPositions[i * 3 + 2] = z;
+
+    const isGreen = Math.random() > 0.3;
+    if (isGreen) {
+      ffColors[i * 3] = 0.2 + Math.random() * 0.2;
+      ffColors[i * 3 + 1] = 0.5 + Math.random() * 0.4;
+      ffColors[i * 3 + 2] = 0.1;
+    } else {
+      ffColors[i * 3] = 0.5 + Math.random() * 0.3;
+      ffColors[i * 3 + 1] = 0.5 + Math.random() * 0.3;
+      ffColors[i * 3 + 2] = 0.1;
+    }
+    ffSizes[i] = rng(2, 5);
+
+    ffData.push({
+      baseX: x, baseY: y, baseZ: z,
+      phase: rng(0, Math.PI * 2),
+      speed: rng(0.3, 1.0),
+      radius: rng(0.3, 1.5),
+      ySpeed: rng(0.2, 0.8)
+    });
+  }
+
+  fireflyGeo.setAttribute('position', new THREE.BufferAttribute(ffPositions, 3));
+  fireflyGeo.setAttribute('color', new THREE.BufferAttribute(ffColors, 3));
+  fireflyGeo.setAttribute('size', new THREE.BufferAttribute(ffSizes, 1));
+
+  const fireflyVertShader = 
+    attribute float size;
+    varying vec3 vColor;
+    void main() {
+      vColor = color;
+      vec4 mvPos = modelViewMatrix * vec4(position, 1.0);
+      gl_PointSize = size * (200.0 / -mvPos.z);
+      gl_Position = projectionMatrix * mvPos;
+    }
+  ;
+  const fireflyFragShader = 
+    varying vec3 vColor;
+    void main() {
+      float d = length(gl_PointCoord - vec2(0.5));
+      if (d > 0.5) discard;
+      float alpha = smoothstep(0.5, 0.0, d);
+      gl_FragColor = vec4(vColor, alpha * 0.8);
+    }
+  ;
+
+  const fireflyMat = new THREE.ShaderMaterial({
+    vertexShader: fireflyVertShader,
+    fragmentShader: fireflyFragShader,
+    transparent: true,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false,
+    vertexColors: true
+  });
+
+  const fireflies = new THREE.Points(fireflyGeo, fireflyMat);
+  scene.add(fireflies);
+  console.log('[Version A] Fireflies created:', fireflyCount);
+
+  setLoad(80);
+
+  // --- Fog particles near ground ---
+  console.log('[Version A] Creating ground fog particles');
+  const fogCount = 120;
+  const fogGeo = new THREE.BufferGeometry();
+  const fogPos = new Float32Array(fogCount * 3);
+  const fogSizes = new Float32Array(fogCount);
+  for (let i = 0; i < fogCount; i++) {
+    fogPos[i * 3] = rng(-25, 25);
+    fogPos[i * 3 + 1] = rng(-0.4, 0.5);
+    fogPos[i * 3 + 2] = rng(-25, 25);
+    fogSizes[i] = rng(8, 20);
+  }
+  fogGeo.setAttribute('position', new THREE.BufferAttribute(fogPos, 3));
+  fogGeo.setAttribute('size', new THREE.BufferAttribute(fogSizes, 1));
+
+  const fogVertShader = 
+    attribute float size;
+    varying float vAlpha;
+    void main() {
+      vAlpha = 1.0 - smoothstep(0.0, 25.0, abs(position.x) + abs(position.z) * 0.3);
+      vec4 mvPos = modelViewMatrix * vec4(position, 1.0);
+      gl_PointSize = size * (200.0 / -mvPos.z);
+      gl_Position = projectionMatrix * mvPos;
+    }
+  ;
+  const fogFragShader = 
+    varying float vAlpha;
+    void main() {
+      float d = length(gl_PointCoord - vec2(0.5));
+      if (d > 0.5) discard;
+      float a = smoothstep(0.5, 0.0, d) * vAlpha * 0.15;
+      gl_FragColor = vec4(0.3, 0.5, 0.3, a);
+    }
+  ;
+
+  const fogMat = new THREE.ShaderMaterial({
+    vertexShader: fogVertShader,
+    fragmentShader: fogFragShader,
+    transparent: true,
+    depthWrite: false,
+    blending: THREE.NormalBlending
+  });
+
+  const fogParticles = new THREE.Points(fogGeo, fogMat);
+  scene.add(fogParticles);
+  console.log('[Version A] Ground fog particles created');
+
+  setLoad(100);
+
+  // --- Mouse parallax ---
+  console.log('[Version A] Setting up mouse parallax');
+  let mouseX = 0, mouseY = 0;
+  let targetCamX = 0, targetCamY = 3;
+
+  window.addEventListener('mousemove', function(e) {
+    mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
+    mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+    targetCamX = mouseX * 3;
+    targetCamY = 3 - mouseY * 1.5;
+  });
+  console.log('[Version A] Mouse listener added');
+
+  // --- Resize ---
+  window.addEventListener('resize', function() {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
+
+  // --- Hide loading ---
+  setTimeout(function() {
+    loadingEl.classList.add('hidden');
+    console.log('[Version A] Loading hidden');
+  }, 800);
+
+  // --- Animation loop ---
+  console.log('[Version A] Starting animation loop');
+  let time = 0;
+
+  function animate() {
+    requestAnimationFrame(animate);
+    time += 0.016;
+
+    // Smooth camera parallax
+    camera.position.x += (targetCamX - camera.position.x) * 0.02;
+    camera.position.y += (targetCamY - camera.position.y) * 0.02;
+    camera.lookAt(0, 2, 0);
+
+    // Animate fireflies
+    const posArr = fireflyGeo.attributes.position.array;
+    for (let i = 0; i < fireflyCount; i++) {
+      const d = ffData[i];
+      posArr[i * 3] = d.baseX + Math.sin(time * d.speed + d.phase) * d.radius;
+      posArr[i * 3 + 1] = d.baseY + Math.sin(time * d.ySpeed + d.phase) * 0.5;
+      posArr[i * 3 + 2] = d.baseZ + Math.cos(time * d.speed * 0.7 + d.phase) * d.radius;
+    }
+    fireflyGeo.attributes.position.needsUpdate = true;
+
+    // Slowly rotate ground fog
+    fogParticles.rotation.y = time * 0.005;
+
+    // Gentle tree sway
+    for (let i = 0; i < trees.length; i++) {
+      trees[i].rotation.z = Math.sin(time * 0.5 + i) * 0.01;
+    }
+
+    renderer.render(scene, camera);
+  }
+
+  console.log('[Version A] Animation loop started');
+  animate();
+  console.log('[Version A] All done!');
+})();
+</script>
+</body>
+</html>
