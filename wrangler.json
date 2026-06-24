@@ -1,0 +1,11 @@
+{
+  "name": "wilderness-nature",
+  "compatibility_date": "2024-01-01",
+  "assets": {
+    "directory": "dist",
+    "binding": "ASSETS"
+  },
+  "routes": [
+    "*->1106020599.workers.dev"
+  ]
+}
