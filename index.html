@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -26,12 +26,21 @@ canvas { display: block; }
     text-shadow: 0 1px 8px rgba(0,0,0,0.5);
     pointer-events: none; z-index: 10;
 }
+#ui-hint {
+    position: fixed; bottom: 28px; right: 28px;
+    text-align: right; font-size: 11px; letter-spacing: 1.5px;
+    color: rgba(255,255,255,0.55); font-family: Georgia, serif;
+    text-shadow: 0 1px 6px rgba(0,0,0,0.6);
+    pointer-events: none; z-index: 10;
+    line-height: 1.8;
+}
 </style>
 </head>
 <body>
 
 <div id="loading"><div class="loading-text">ENTERING WILDERNESS</div></div>
 <div id="hint">MOVE YOUR MOUSE TO PAN THE CAMERA</div>
+<div id="ui-hint">MOVE MOUSE OVER GROUND TO GROW GRASS<br>CLICK TO PLANT TREES</div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
@@ -47,17 +56,26 @@ canvas { display: block; }
     var scene, camera, renderer;
     var clock;
     var mouseX = 0, mouseY = 0;
+    var mouseVec = new THREE.Vector2(-999, -999);
+    var raycaster = new THREE.Raycaster();
     var trees = [];
     var fireflyPositions;
     var fireflyVelocities;
+    var grassBlades = [];
+    var smallPlants = [];
+    var groundMesh = null;
 
+    // ---- STEP 1: SCENE ----
     console.log("[Forest] Step 1: Creating scene...");
 
     scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x0a150a);
-    scene.fog = new THREE.FogExp2(0x0a150a, 0.035);
-    console.log("[Forest] Scene created with fog.");
+    // Lighter background for通透 feel
+    scene.background = new THREE.Color(0x1a3a1a);
+    // Light green fog for distant transparency
+    scene.fog = new THREE.FogExp2(0xa8d8a8, 0.012);
+    console.log("[Forest] Scene created with fog color 0xa8d8a8.");
 
+    // ---- STEP 2: CAMERA ----
     console.log("[Forest] Step 2: Creating camera...");
 
     camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 200);
@@ -65,6 +83,7 @@ canvas { display: block; }
     camera.lookAt(0, 0, 0);
     console.log("[Forest] Camera created.");
 
+    // ---- STEP 3: RENDERER ----
     console.log("[Forest] Step 3: Creating renderer...");
 
     renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -72,15 +91,25 @@ canvas { display: block; }
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.outputEncoding = THREE.sRGBEncoding;
     document.body.insertBefore(renderer.domElement, document.body.firstChild);
     console.log("[Forest] Renderer created and appended to DOM.");
 
+    // ---- STEP 4: LIGHTS ----
     console.log("[Forest] Step 4: Adding lights...");
 
-    var ambientLight = new THREE.AmbientLight(0x1a2a1a, 0.5);
+    // Ambient base brightness
+    var ambientLight = new THREE.AmbientLight(0x3a5a3a, 0.8);
     scene.add(ambientLight);
+    console.log("[Forest] AmbientLight added (intensity 0.8).");
 
-    var dirLight = new THREE.DirectionalLight(0xffeedd, 0.7);
+    // Hemisphere sky/ground blend
+    var hemiLight = new THREE.HemisphereLight(0x88cc88, 0x445522, 0.6);
+    scene.add(hemiLight);
+    console.log("[Forest] HemisphereLight added (intensity 0.6).");
+
+    // Strong directional sunlight
+    var dirLight = new THREE.DirectionalLight(0xffeedd, 3.5);
     dirLight.position.set(10, 15, 5);
     dirLight.castShadow = true;
     dirLight.shadow.mapSize.width = 1024;
@@ -92,11 +121,24 @@ canvas { display: block; }
     dirLight.shadow.camera.top = 20;
     dirLight.shadow.camera.bottom = -20;
     scene.add(dirLight);
+    console.log("[Forest] DirectionalLight added (intensity 3.5).");
 
-    var hemiLight = new THREE.HemisphereLight(0x3a5a3a, 0x1a1a0a, 0.3);
-    scene.add(hemiLight);
+    // Point lights simulating sunbeams through canopy
+    var pointLightPositions = [
+        { x: 5, y: 6, z: 3 },
+        { x: -4, y: 5, z: -2 },
+        { x: 2, y: 7, z: -5 }
+    ];
+    for (var pl = 0; pl < pointLightPositions.length; pl++) {
+        var plData = pointLightPositions[pl];
+        var ptLight = new THREE.PointLight(0xffeebb, 1.2, 15, 2);
+        ptLight.position.set(plData.x, plData.y, plData.z);
+        scene.add(ptLight);
+        console.log("[Forest] PointLight added at (" + plData.x + "," + plData.y + "," + plData.z + ").");
+    }
     console.log("[Forest] Lights added.");
 
+    // ---- STEP 5: GROUND ----
     console.log("[Forest] Step 5: Creating ground...");
 
     var groundGeo = new THREE.PlaneGeometry(WORLD_SIZE, WORLD_SIZE, 32, 32);
@@ -111,7 +153,7 @@ canvas { display: block; }
     groundGeo.computeVertexNormals();
 
     var groundMat = new THREE.MeshStandardMaterial({
-        color: 0x1a3a1a,
+        color: 0x2a5a2a,
         roughness: 0.9,
         metalness: 0.0
     });
@@ -119,8 +161,10 @@ canvas { display: block; }
     ground.rotation.x = -Math.PI / 2;
     ground.receiveShadow = true;
     scene.add(ground);
+    groundMesh = ground;
     console.log("[Forest] Ground created.");
 
+    // ---- STEP 6: TREES ----
     console.log("[Forest] Step 6: Creating trees...");
 
     var trunkMat = new THREE.MeshStandardMaterial({
@@ -171,41 +215,182 @@ canvas { display: block; }
     }
     console.log("[Forest] Total trees:", trees.length);
 
-    console.log("[Forest] Step 7: Creating fireflies...");
+    // ---- STEP 7: SMALL PLANTS (flowers, mushrooms, bushes) ----
+    console.log("[Forest] Step 7: Creating small plants...");
 
-    fireflyPositions = new Float32Array(FIREFLY_COUNT * 3);
-    fireflyVelocities = [];
+    // Flower colors
+    var flowerColors = [0xff6699, 0xffaa33, 0xff4466, 0xeeeeff, 0xaa88ff, 0xffff66];
 
-    var fireflyMat = new THREE.PointsMaterial({
-        color: 0xaaff66,
-        size: 0.15,
-        transparent: true,
-        opacity: 0.8,
-        sizeAttenuation: true
-    });
-
-    var fireflyGeo = new THREE.BufferGeometry();
-    fireflyGeo.setAttribute("position", new THREE.BufferAttribute(fireflyPositions, 3));
-
-    var fireflyPoints = new THREE.Points(fireflyGeo, fireflyMat);
-    scene.add(fireflyPoints);
-
-    for (var fi = 0; fi < FIREFLY_COUNT; fi++) {
-        fireflyPositions[fi * 3] = (Math.random() - 0.5) * 30;
-        fireflyPositions[fi * 3 + 1] = 1 + Math.random() * 4;
-        fireflyPositions[fi * 3 + 2] = (Math.random() - 0.5) * 30;
-        fireflyVelocities.push({
-            x: (Math.random() - 0.5) * 0.01,
-            y: (Math.random() - 0.5) * 0.005,
-            z: (Math.random() - 0.5) * 0.01
-        });
+    function createFlower(x, z) {
+        var g = new THREE.Group();
+        // stem
+        var stemGeo = new THREE.CylinderGeometry(0.01, 0.01, 0.2, 4);
+        var stemMat = new THREE.MeshStandardMaterial({ color: 0x3a7a2a, roughness: 0.8 });
+        var stem = new THREE.Mesh(stemGeo, stemMat);
+        stem.position.y = 0.1;
+        g.add(stem);
+        // petals
+        var petalColor = flowerColors[Math.floor(Math.random() * flowerColors.length)];
+        var petalGeo = new THREE.SphereGeometry(0.05, 6, 4);
+        var petalMat = new THREE.MeshStandardMaterial({ color: petalColor, roughness: 0.6 });
+        var petal = new THREE.Mesh(petalGeo, petalMat);
+        petal.position.y = 0.22;
+        g.add(petal);
+        g.position.set(x, 0, z);
+        g.userData.swayOffset = Math.random() * Math.PI * 2;
+        g.userData.swaySpeed = 0.8 + Math.random() * 0.5;
+        scene.add(g);
+        smallPlants.push(g);
     }
 
-    console.log("[Forest] Step 8: Setting up input handling...");
+    function createMushroom(x, z) {
+        var g = new THREE.Group();
+        // stem
+        var stemGeo = new THREE.CylinderGeometry(0.02, 0.025, 0.12, 6);
+        var stemMat = new THREE.MeshStandardMaterial({ color: 0xf5f0dd, roughness: 0.7 });
+        var stem = new THREE.Mesh(stemGeo, stemMat);
+        stem.position.y = 0.06;
+        g.add(stem);
+        // cap (hemisphere via scaled sphere)
+        var capGeo = new THREE.SphereGeometry(0.06, 8, 4, 0, Math.PI * 2, 0, Math.PI / 2);
+        var capColors = [0xcc3333, 0xdd8833, 0xbb5522, 0xddccaa];
+        var capMat = new THREE.MeshStandardMaterial({ color: capColors[Math.floor(Math.random() * capColors.length)], roughness: 0.6 });
+        var cap = new THREE.Mesh(capGeo, capMat);
+        cap.position.y = 0.12;
+        g.add(cap);
+        g.position.set(x, 0, z);
+        g.userData.swayOffset = Math.random() * Math.PI * 2;
+        g.userData.swaySpeed = 0.3 + Math.random() * 0.2;
+        scene.add(g);
+        smallPlants.push(g);
+    }
+
+    function createBush(x, z) {
+        var g = new THREE.Group();
+        var bushColor = 0x2a6a1a + Math.floor(Math.random() * 0x102010);
+        var bushMat = new THREE.MeshStandardMaterial({ color: bushColor, roughness: 0.8 });
+        var numSpheres = 2 + Math.floor(Math.random() * 2);
+        for (var bs = 0; bs < numSpheres; bs++) {
+            var sGeo = new THREE.SphereGeometry(0.08 + Math.random() * 0.06, 6, 4);
+            var s = new THREE.Mesh(sGeo, bushMat);
+            s.position.set((Math.random() - 0.5) * 0.1, 0.08 + Math.random() * 0.04, (Math.random() - 0.5) * 0.1);
+            g.add(s);
+        }
+        g.position.set(x, 0, z);
+        g.userData.swayOffset = Math.random() * Math.PI * 2;
+        g.userData.swaySpeed = 0.4 + Math.random() * 0.3;
+        scene.add(g);
+        smallPlants.push(g);
+    }
+
+    // Place 40 flowers, 15 mushrooms, 10 bushes randomly on ground
+    for (var fp = 0; fp < 40; fp++) {
+        var fx = (Math.random() - 0.5) * 30;
+        var fz = (Math.random() - 0.5) * 30;
+        createFlower(fx, fz);
+    }
+    for (var mp = 0; mp < 15; mp++) {
+        var mx = (Math.random() - 0.5) * 28;
+        var mz = (Math.random() - 0.5) * 28;
+        createMushroom(mx, mz);
+    }
+    for (var bp = 0; bp < 10; bp++) {
+        var bx = (Math.random() - 0.5) * 26;
+        var bz = (Math.random() - 0.5) * 26;
+        createBush(bx, bz);
+    }
+    console.log("[Forest] Small plants created: " + smallPlants.length + " total.");
+
+    // ---- STEP 8: GRASS BLADES (grow on mouse hover) ----
+    console.log("[Forest] Step 8: Setting up grass system...");
+
+    function createGrassBlade(x, z) {
+        var geo = new THREE.PlaneGeometry(0.03, 0.25 + Math.random() * 0.15);
+        var mat = new THREE.MeshStandardMaterial({
+            color: 0x4a9a2a,
+            side: THREE.DoubleSide,
+            transparent: true,
+            opacity: 0,
+            roughness: 0.9
+        });
+        var blade = new THREE.Mesh(geo, mat);
+        blade.position.set(x, 0.12, z);
+        blade.rotation.y = Math.random() * Math.PI;
+        blade.userData.targetOpacity = 0.6 + Math.random() * 0.4;
+        blade.userData.swayOffset = Math.random() * Math.PI * 2;
+        scene.add(blade);
+        grassBlades.push(blade);
+    }
+
+    // ---- STEP 9: INPUT HANDLING ----
+    console.log("[Forest] Step 9: Setting up input handling...");
 
     window.addEventListener("mousemove", function(event) {
         mouseX = (event.clientX / window.innerWidth) * 2 - 1;
         mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
+
+        // Update mouse vector for raycasting
+        mouseVec.set(mouseX, mouseY);
+        console.log("[Forest] Mouse move: client=(" + event.clientX + "," + event.clientY + "), vec=(" + mouseVec.x.toFixed(2) + "," + mouseVec.y.toFixed(2) + ")");
+
+        // Raycast against ground
+        raycaster.setFromCamera(mouseVec, camera);
+        var intersects = raycaster.intersectObject(groundMesh);
+        if (intersects.length > 0) {
+            var hit = intersects[0];
+            var hx = hit.point.x;
+            var hz = hit.point.z;
+            console.log("[Forest] Ground hit at (" + hx.toFixed(2) + ", 0, " + hz.toFixed(2) + ")");
+
+            // Grow grass at hit point if not too many already
+            if (grassBlades.length < 500) {
+                createGrassBlade(hx, hz);
+                // Also grow nearby grass
+                for (var ng = 0; ng < 3; ng++) {
+                    createGrassBlade(
+                        hx + (Math.random() - 0.5) * 0.5,
+                        hz + (Math.random() - 0.5) * 0.5
+                    );
+                }
+            }
+        } else {
+            console.log("[Forest] Ground miss (raycaster origin:", raycaster.ray.origin.x.toFixed(2) + "," + raycaster.ray.origin.y.toFixed(2) + "," + raycaster.ray.origin.z.toFixed(2) + ")");
+        }
+    });
+
+    // Click to plant a small tree
+    window.addEventListener("click", function(event) {
+        console.log("[Forest] Click detected at (" + event.clientX + "," + event.clientY + ")");
+        mouseVec.set((event.clientX / window.innerWidth) * 2 - 1, -(event.clientY / window.innerHeight) * 2 + 1);
+        raycaster.setFromCamera(mouseVec, camera);
+        var intersects = raycaster.intersectObject(groundMesh);
+        if (intersects.length > 0) {
+            var hit = intersects[0];
+            console.log("[Forest] Click ground hit at (" + hit.point.x.toFixed(2) + ", 0, " + hit.point.z.toFixed(2) + ") - planting tree!");
+            var cx = hit.point.x;
+            var cz = hit.point.z;
+            var treeGroup = new THREE.Group();
+            var th = 1.5 + Math.random() * 1.5;
+            var tr = 0.08 + Math.random() * 0.06;
+            var trunkGeo = new THREE.CylinderGeometry(tr * 0.7, tr, th, 6);
+            var trunk = new THREE.Mesh(trunkGeo, trunkMat);
+            trunk.position.y = th / 2;
+            trunk.castShadow = true;
+            treeGroup.add(trunk);
+            var lc = leafColors[Math.floor(Math.random() * leafColors.length)];
+            var lm = new THREE.MeshStandardMaterial({ color: lc, roughness: 0.8 });
+            var lGeo = new THREE.ConeGeometry(0.8, th * 0.5, 6);
+            var leafMesh = new THREE.Mesh(lGeo, lm);
+            leafMesh.position.y = th * 0.7;
+            leafMesh.castShadow = true;
+            treeGroup.add(leafMesh);
+            treeGroup.position.set(cx, 0, cz);
+            scene.add(treeGroup);
+            trees.push(treeGroup);
+            console.log("[Forest] Tree planted! Total trees:", trees.length);
+        } else {
+            console.log("[Forest] Click missed ground.");
+        }
     });
 
     window.addEventListener("resize", function() {
@@ -215,7 +400,8 @@ canvas { display: block; }
         console.log("[Forest] Window resized.");
     });
 
-    console.log("[Forest] Step 9: Starting animation loop...");
+    // ---- STEP 10: ANIMATION LOOP ----
+    console.log("[Forest] Step 10: Starting animation loop...");
 
     clock = new THREE.Clock();
 
@@ -231,12 +417,16 @@ canvas { display: block; }
         var delta = clock.getDelta();
         var elapsed = clock.getElapsedTime();
 
+        // Camera follows mouse
         var targetX = mouseX * 5;
         var targetY = 4 + mouseY * 2;
         camera.position.x += (targetX - camera.position.x) * 0.02;
         camera.position.y += (targetY - camera.position.y) * 0.02;
         camera.lookAt(0, 1, 0);
 
+        // Fireflies
+        var fireflyGeo = raycaster ? fireflyGeo : null;
+        // re-get the geometry reference
         for (var i = 0; i < FIREFLY_COUNT; i++) {
             fireflyPositions[i * 3] += fireflyVelocities[i].x + Math.sin(elapsed + i) * 0.003;
             fireflyPositions[i * 3 + 1] += fireflyVelocities[i].y + Math.cos(elapsed * 0.7 + i) * 0.002;
@@ -247,17 +437,57 @@ canvas { display: block; }
             if (Math.abs(fireflyPositions[i * 3]) > 18) fireflyVelocities[i].x *= -1;
             if (Math.abs(fireflyPositions[i * 3 + 2]) > 18) fireflyVelocities[i].z *= -1;
         }
-        fireflyGeo.attributes.position.needsUpdate = true;
 
+        // We need the firefly geometry reference - store it globally
+        // Update firefly positions
+        if (window._fireflyGeo) {
+            window._fireflyGeo.attributes.position.needsUpdate = true;
+        }
+
+        // Trees sway
         for (var t = 0; t < trees.length; t++) {
             trees[t].rotation.z = Math.sin(elapsed * 0.5 + t) * 0.01;
+        }
+
+        // Small plants sway gently
+        for (var sp = 0; sp < smallPlants.length; sp++) {
+            var plant = smallPlants[sp];
+            var sway = Math.sin(elapsed * plant.userData.swaySpeed + plant.userData.swayOffset) * 0.04;
+            plant.rotation.z = sway;
+            plant.rotation.x = Math.cos(elapsed * plant.userData.swaySpeed * 0.7 + plant.userData.swayOffset) * 0.02;
+        }
+
+        // Grass blades fade in and sway
+        for (var gb = 0; gb < grassBlades.length; gb++) {
+            var blade = grassBlades[gb];
+            if (blade.material.opacity < blade.userData.targetOpacity) {
+                blade.material.opacity += 0.02;
+            }
+            blade.rotation.z = Math.sin(elapsed * 1.5 + blade.userData.swayOffset) * 0.08;
         }
 
         renderer.render(scene, camera);
     }
 
-    animate();
+    // Store firefly geometry reference for animation loop
+    var fireflyMat = new THREE.PointsMaterial({
+        color: 0xaaff66,
+        size: 0.15,
+        transparent: true,
+        opacity: 0.8,
+        sizeAttenuation: true
+    });
+
+    var fireflyGeo = new THREE.BufferGeometry();
+    fireflyGeo.setAttribute("position", new THREE.BufferAttribute(fireflyPositions, 3));
+
+    var fireflyPoints = new THREE.Points(fireflyGeo, fireflyMat);
+    scene.add(fireflyPoints);
+    window._fireflyGeo = fireflyGeo;
+
     console.log("[Forest] Animation loop started!");
+
+    animate();
 
     window.addEventListener("error", function(event) {
         console.error("[Forest] Error:", event.message, "at", event.filename, ":", event.lineno);
