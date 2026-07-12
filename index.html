@@ -87,7 +87,7 @@
     font-family: 'Playfair Display', 'Cormorant Garamond', 'Georgia', serif;
     font-size: clamp(36px, 6.8vw, 90px); font-weight: 800;
     color: rgba(255,255,255,0.95); letter-spacing: 2px; text-align: center; white-space: nowrap;
-    text-shadow: 0 0 18px rgba(255,210,120,0.35), 0 0 45px rgba(255,170,60,0.18), 0 0 80px rgba(200,150,60,0.1), 0 2px 30px rgba(0,0,0,0.5);
+    text-shadow: 0 0 10px rgba(255,255,255,0.15), 0 0 30px rgba(255,210,120,0.5), 0 0 60px rgba(255,180,60,0.3), 0 0 100px rgba(255,160,40,0.15), 0 4px 40px rgba(0,0,0,0.6);
     animation: fadeUp 1.2s cubic-bezier(0.4,0,0.2,1);
   }
   .hero-letter { display: inline-block; transition: transform 0.3s ease; }
@@ -153,6 +153,34 @@
 
   
 
+/* ============ ENTER 3D BUTTON ============ */
+.enter-3d-btn {
+  position: fixed; bottom: 48px; left: 48px; z-index: 100;
+  display: flex; align-items: center; gap: 12px;
+  padding: 16px 28px;
+  background: rgba(255,255,255,0.06);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 16px;
+  color: rgba(255,255,255,0.85);
+  font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 500;
+  letter-spacing: 3px; text-decoration: none; text-transform: uppercase;
+  transition: all 0.4s cubic-bezier(0.25,0.8,0.25,1.2);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.06);
+}
+.enter-3d-btn:hover {
+  background: rgba(255,255,255,0.1);
+  border-color: rgba(255,255,255,0.25);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.4), 0 0 30px rgba(255,210,120,0.12), inset 0 1px 0 rgba(255,255,255,0.1);
+  color: #fff;
+}
+.enter-3d-btn .arrow {
+  display: inline-block; transition: transform 0.35s ease;
+  font-size: 18px;
+}
+.enter-3d-btn:hover .arrow { transform: translateX(5px); }
+/* ============ END ENTER 3D BUTTON ============ */
+
 /* ============ SPOTLIGHT BLACK CIRCLE ============ */
 #spotlight{position:fixed;z-index:999;pointer-events:none;width:220px;height:220px;border-radius:50%;background:#0a0a0a;transform:translate(-50%,-50%);opacity:0;transition:opacity 0.25s ease;overflow:hidden;}
 #spotlight.visible{opacity:1;}
@@ -201,6 +229,9 @@
       <div class="hero-line"></div>
       <p class="hero-sub">A digital media art cutie</p>
     </section>
+
+    <a href="./3d-garden.html" class="enter-3d-btn">ENTER 3D FOREST <span class="arrow">&#8594;</span></a>
+
   </main></div></div></div><!-- /app-container -->
 
 </div>
@@ -462,7 +493,7 @@ const Forest = (() => {
         }
       }
 
-      // Foliage clusters at branch tips 鈥?irregular soft blobs
+      // Foliage clusters at branch tips 闂?irregular soft blobs
       if (br > 0) {
         const fc = 3 + br;
         for (let f = 0; f < fc; f++) {
@@ -929,11 +960,11 @@ document.addEventListener('DOMContentLoaded', () => Forest.init());
   <!-- SPOTLIGHT BLACK CIRCLE -->
   <div id="spotlight">
     <div class="spotlight-inner">
-      <h1 class="hero-title" style="color:#fff;text-shadow:none;font-size:clamp(28px,5vw,70px)">浣犲ソ锛屾垜鏄畫瀹?/h1>
+      <h1 class="hero-title" style="color:#fff;text-shadow:none;font-size:clamp(28px,5vw,70px)">婵炶揪绲挎慨鎾Χ娴犲鏅悘鐐村劤閻忓鏌￠崟闈涚仩闁伙綆鍋嗛埀?/h1>
       <div class="hero-line" style="background:rgba(255,255,255,0.4)"></div>
-      <p class="hero-sub" style="color:rgba(255,255,255,0.6);text-shadow:none;font-size:13px">鏁板瓧濯掍綋鑹烘湳鐨勪竴鍚嶅皬鍙埍</p>
+      <p class="hero-sub" style="color:rgba(255,255,255,0.6);text-shadow:none;font-size:13px">闂佽桨鐒﹀姗€鎮鸿閸掑﹪骞掑鍥┬梺鐓庢贡閸庛倕锕㈤幎鑺ュ剭闁告洦浜為閬嶆煕濮橆剛孝闁活煈鍓熷畷锝夘敍濠婂啰鍘?/p>
     </div>
-      <div class="s-sub">鏁板瓧濯掍綋鑹烘湳鐨勪竴鍚嶅皬鍙埍</div>
+      <div class="s-sub">闂佽桨鐒﹀姗€鎮鸿閸掑﹪骞掑鍥┬梺鐓庢贡閸庛倕锕㈤幎鑺ュ剭闁告洦浜為閬嶆煕濮橆剛孝闁活煈鍓熷畷锝夘敍濠婂啰鍘?/div>
     </div>
   </div>
 <script>
