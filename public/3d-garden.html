@@ -64,11 +64,11 @@ canvas{display:block}
 
 
 /* ---- Mini Spotlight (physical occlusion) ---- */
-#mini-spot{position:fixed;z-index:999;pointer-events:none;width:170px;height:170px;border-radius:50%;background:#000;transform:translate(-50%,-50%);opacity:0;transition:opacity 0.2s;overflow:hidden;animation:spotFloat 4s ease-in-out infinite}
+#mini-spot{position:fixed;z-index:999;pointer-events:none;width:85px;height:85px;border-radius:50%;background:#000;transform:translate(-50%,-50%);opacity:0;transition:opacity 0.2s;overflow:hidden;animation:spotFloat 4s ease-in-out infinite}
 #mini-spot.show{opacity:1}
 @keyframes spotFloat{0%,100%{margin-top:-2px}50%{margin-top:2px}}
 #spot-inner{position:absolute;width:100vw;height:100vh;pointer-events:none}
-#spot-inner .sc{position:absolute;font-family:'Playfair Display','Cormorant Garamond','Georgia',serif;font-weight:700;letter-spacing:6px;white-space:nowrap;color:#fff;text-shadow:0 0 12px rgba(255,255,255,0.25);text-align:center;display:flex;align-items:center;justify-content:center}
+#spot-inner .sc{position:absolute;font-family:'Playfair Display','Cormorant Garamond','Georgia',serif;font-weight:700;letter-spacing:2px;white-space:nowrap;color:#fff;text-shadow:0 0 12px rgba(255,255,255,0.25);text-align:center}
 #spot-inner .sc.xl{font-size:60px}
 #spot-inner .sc.lg{font-size:42px}
 #spot-inner .sc.md{font-size:28px}
