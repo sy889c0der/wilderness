@@ -154,25 +154,34 @@
   
 
 /* ============ SPOTLIGHT BLACK CIRCLE ============ */
-#spotlight{position:fixed;z-index:999;pointer-events:none;width:220px;height:220px;border-radius:50%;background:#0a0a0a;transform:translate(-50%,-50%);opacity:0;transition:opacity 0.25s ease;overflow:hidden;animation:tentacleFluid 3.5s ease-in-out infinite;}
+#spotlight{position:fixed;z-index:999;pointer-events:none;width:220px;height:220px;border-radius:50%;background:#0a0a0a;transform:translate(-50%,-50%);opacity:0;transition:opacity 0.25s ease;overflow:hidden;}
 #spotlight.visible{opacity:1;}
-#spotlight.venom{animation:tentacleBurst 0.6s cubic-bezier(0.25,0.1,0.25,1);}
-@keyframes tentacleFluid{
-  0%,100%{box-shadow:18px -12px 30px 6px rgba(0,0,0,0.65),-14px 22px 26px 4px rgba(0,0,0,0.55),22px 14px 34px 7px rgba(0,0,0,0.5),-18px -18px 22px 5px rgba(0,0,0,0.55);}
-  15%{box-shadow:26px -6px 32px 7px rgba(0,0,0,0.6),-10px 18px 24px 5px rgba(0,0,0,0.5),19px 20px 36px 6px rgba(0,0,0,0.55),-24px -12px 26px 5px rgba(0,0,0,0.5);}
-  30%{box-shadow:14px -20px 28px 5px rgba(0,0,0,0.55),-22px 14px 32px 7px rgba(0,0,0,0.65),26px 8px 32px 5px rgba(0,0,0,0.45),-14px -22px 24px 6px rgba(0,0,0,0.6);}
-  45%{box-shadow:22px -10px 27px 7px rgba(0,0,0,0.5),-18px 26px 29px 5px rgba(0,0,0,0.55),14px 22px 33px 6px rgba(0,0,0,0.6),-28px -8px 23px 5px rgba(0,0,0,0.5);}
-  60%{box-shadow:10px -16px 31px 6px rgba(0,0,0,0.6),-26px 10px 27px 5px rgba(0,0,0,0.5),24px 16px 35px 7px rgba(0,0,0,0.55),-16px -26px 25px 6px rgba(0,0,0,0.6);}
-  75%{box-shadow:20px -8px 29px 6px rgba(0,0,0,0.55),-14px 24px 30px 6px rgba(0,0,0,0.6),18px 18px 31px 5px rgba(0,0,0,0.5),-22px -16px 27px 5px rgba(0,0,0,0.55);}
-  90%{box-shadow:28px -14px 33px 8px rgba(0,0,0,0.5),-10px 18px 25px 4px rgba(0,0,0,0.55),25px 10px 34px 6px rgba(0,0,0,0.6),-18px -18px 23px 5px rgba(0,0,0,0.5);}
-}
-@keyframes tentacleBurst{
-  0%{box-shadow:18px -12px 30px 6px rgba(0,0,0,0.65),-14px 22px 26px 4px rgba(0,0,0,0.55),22px 14px 34px 7px rgba(0,0,0,0.5),-18px -18px 22px 5px rgba(0,0,0,0.55);}
-  35%{box-shadow:35px -22px 50px 14px rgba(0,0,0,0.75),-30px 35px 45px 12px rgba(0,0,0,0.65),38px 25px 55px 16px rgba(0,0,0,0.55),-34px -30px 42px 11px rgba(0,0,0,0.6);}
-  70%{box-shadow:22px -14px 36px 8px rgba(0,0,0,0.6),-16px 26px 32px 6px rgba(0,0,0,0.55),26px 16px 40px 10px rgba(0,0,0,0.6),-22px -20px 28px 7px rgba(0,0,0,0.55);}
-  100%{box-shadow:18px -12px 30px 6px rgba(0,0,0,0.65),-14px 22px 26px 4px rgba(0,0,0,0.55),22px 14px 34px 7px rgba(0,0,0,0.5),-18px -18px 22px 5px rgba(0,0,0,0.55);}
-}
-.spotlight-inner{position:absolute;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+#spotlight .tentacle{position:absolute;border-radius:50%;background:#000;opacity:0.88;transform-origin:center bottom;}
+#spotlight .t0{left:104px;top:-38px;width:12px;height:55px;animation:tBreathe0 2.8s ease-in-out infinite;}
+#spotlight .t1{left:172px;top:30px;width:12px;height:50px;transform:rotate(45deg);animation:tBreathe1 3.1s ease-in-out infinite 0.4s;}
+#spotlight .t2{left:192px;top:98px;width:12px;height:55px;transform:rotate(90deg);animation:tBreathe2 2.6s ease-in-out infinite 0.9s;}
+#spotlight .t3{left:172px;top:160px;width:12px;height:50px;transform:rotate(135deg);animation:tBreathe3 3.3s ease-in-out infinite 0.2s;}
+#spotlight .t4{left:104px;top:192px;width:12px;height:55px;transform:rotate(180deg);animation:tBreathe4 2.9s ease-in-out infinite 0.7s;}
+#spotlight .t5{left:36px;top:160px;width:12px;height:50px;transform:rotate(225deg);animation:tBreathe5 3.0s ease-in-out infinite 1.1s;}
+#spotlight .t6{left:16px;top:98px;width:12px;height:55px;transform:rotate(270deg);animation:tBreathe6 2.7s ease-in-out infinite 0.5s;}
+#spotlight .t7{left:36px;top:30px;width:12px;height:50px;transform:rotate(315deg);animation:tBreathe7 3.2s ease-in-out infinite 0.8s;}
+/* Hero overlap = tentacles extend */
+#spotlight.venom .tentacle{animation-duration:0.45s !important;}
+#spotlight.venom .t0,#spotlight.venom .t2,#spotlight.venom .t4,#spotlight.venom .t6{transform:scaleY(1.8) !important;}
+#spotlight.venom .t1,#spotlight.venom .t3,#spotlight.venom .t5,#spotlight.venom .t7{transform:scaleY(1.6) rotate(45deg) !important;}
+#spotlight.venom .t1{transform:scaleY(1.6) rotate(45deg) !important;}
+#spotlight.venom .t3{transform:scaleY(1.6) rotate(135deg) !important;}
+#spotlight.venom .t5{transform:scaleY(1.6) rotate(225deg) !important;}
+#spotlight.venom .t7{transform:scaleY(1.6) rotate(315deg) !important;}
+@keyframes tBreathe0{0%,100%{transform:scaleY(1)}30%{transform:scaleY(1.35)}65%{transform:scaleY(0.8)}}
+@keyframes tBreathe1{0%,100%{transform:rotate(45deg) scaleY(1)}30%{transform:rotate(45deg) scaleY(1.3)}65%{transform:rotate(45deg) scaleY(0.75)}}
+@keyframes tBreathe2{0%,100%{transform:rotate(90deg) scaleY(1)}35%{transform:rotate(90deg) scaleY(1.4)}60%{transform:rotate(90deg) scaleY(0.85)}}
+@keyframes tBreathe3{0%,100%{transform:rotate(135deg) scaleY(1)}25%{transform:rotate(135deg) scaleY(1.25)}70%{transform:rotate(135deg) scaleY(0.8)}}
+@keyframes tBreathe4{0%,100%{transform:rotate(180deg) scaleY(1)}40%{transform:rotate(180deg) scaleY(1.35)}60%{transform:rotate(180deg) scaleY(0.75)}}
+@keyframes tBreathe5{0%,100%{transform:rotate(225deg) scaleY(1)}30%{transform:rotate(225deg) scaleY(1.3)}55%{transform:rotate(225deg) scaleY(0.85)}}
+@keyframes tBreathe6{0%,100%{transform:rotate(270deg) scaleY(1)}35%{transform:rotate(270deg) scaleY(1.35)}70%{transform:rotate(270deg) scaleY(0.8)}}
+@keyframes tBreathe7{0%,100%{transform:rotate(315deg) scaleY(1)}25%{transform:rotate(315deg) scaleY(1.25)}60%{transform:rotate(315deg) scaleY(0.8)}}
+.spotlight-inner{position:absolute;display:flex;flex-direction:column;align-items:center;justify-content:center;inset:0;}
 /* ============ END SPOTLIGHT ============ */
 /* ============ LEAF CURSOR ============ */
   #leaf-cursor { position: fixed; z-index: 9999; pointer-events: none; width: 18px; height: auto; transition: transform 0.08s ease-out; }
@@ -942,6 +951,7 @@ document.addEventListener('DOMContentLoaded', () => Forest.init());
   
   <!-- SPOTLIGHT BLACK CIRCLE -->
   <div id="spotlight">
+    <span class="tentacle t0"></span><span class="tentacle t1"></span><span class="tentacle t2"></span><span class="tentacle t3"></span><span class="tentacle t4"></span><span class="tentacle t5"></span><span class="tentacle t6"></span><span class="tentacle t7"></span>
     <div class="spotlight-inner">
       <h1 class="hero-title" style="color:#fff;text-shadow:none;font-size:clamp(28px,5vw,70px)">你好，我是宋宇</h1>
       <div class="hero-line" style="background:rgba(255,255,255,0.4)"></div>
