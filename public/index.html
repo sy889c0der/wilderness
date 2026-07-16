@@ -154,35 +154,14 @@
   
 
 /* ============ SPOTLIGHT BLACK CIRCLE ============ */
-#spotlight{position:fixed;z-index:999;pointer-events:none;width:220px;height:220px;border-radius:50%;background:#0a0a0a;transform:translate(-50%,-50%);opacity:0;transition:opacity 0.25s ease;overflow:hidden;}
+#spotlight{position:fixed;z-index:999;pointer-events:none;width:340px;height:340px;transform:translate(-50%,-50%);opacity:0;transition:opacity 0.25s ease;overflow:visible;}
 #spotlight.visible{opacity:1;}
-#spotlight .tentacle{position:absolute;background:#0a0a0a;opacity:0.92;transform-origin:50% 100%;border-radius:40% 40% 0 0;}
-#spotlight .t0{left:106px;top:-48px;width:8px;height:65px;animation:tB0 3.4s ease-in-out infinite;}
-#spotlight .t1{left:175px;top:22px;width:7px;height:58px;transform:rotate(42deg);animation:tB1 3.0s ease-in-out infinite 0.6s;}
-#spotlight .t2{left:198px;top:100px;width:8px;height:62px;transform:rotate(93deg);animation:tB2 3.6s ease-in-out infinite 0.3s;}
-#spotlight .t3{left:175px;top:168px;width:7px;height:55px;transform:rotate(138deg);animation:tB3 2.8s ease-in-out infinite 1.0s;}
-#spotlight .t4{left:106px;top:198px;width:8px;height:65px;transform:rotate(180deg);animation:tB4 3.2s ease-in-out infinite 0.7s;}
-#spotlight .t5{left:38px;top:168px;width:7px;height:58px;transform:rotate(222deg);animation:tB5 3.5s ease-in-out infinite 0.4s;}
-#spotlight .t6{left:14px;top:100px;width:8px;height:60px;transform:rotate(267deg);animation:tB6 2.9s ease-in-out infinite 0.9s;}
-#spotlight .t7{left:38px;top:22px;width:7px;height:55px;transform:rotate(318deg);animation:tB7 3.3s ease-in-out infinite 0.2s;}
-/* Hero overlap = tentacles snap longer */
-#spotlight.venom .t0{animation:none;transform:scaleY(2.0);}
-#spotlight.venom .t1{animation:none;transform:rotate(42deg) scaleY(1.8);}
-#spotlight.venom .t2{animation:none;transform:rotate(93deg) scaleY(1.9);}
-#spotlight.venom .t3{animation:none;transform:rotate(138deg) scaleY(1.7);}
-#spotlight.venom .t4{animation:none;transform:rotate(180deg) scaleY(2.0);}
-#spotlight.venom .t5{animation:none;transform:rotate(222deg) scaleY(1.8);}
-#spotlight.venom .t6{animation:none;transform:rotate(267deg) scaleY(1.9);}
-#spotlight.venom .t7{animation:none;transform:rotate(318deg) scaleY(1.7);}
-@keyframes tB0{0%,100%{transform:scaleY(1)}20%{transform:scaleY(1.45)}55%{transform:scaleY(0.65)}80%{transform:scaleY(1.2)}}
-@keyframes tB1{0%,100%{transform:rotate(42deg) scaleY(1)}35%{transform:rotate(42deg) scaleY(1.35)}70%{transform:rotate(42deg) scaleY(0.6)}}
-@keyframes tB2{0%,100%{transform:rotate(93deg) scaleY(1)}25%{transform:rotate(93deg) scaleY(0.55)}50%{transform:rotate(93deg) scaleY(1.5)}85%{transform:rotate(93deg) scaleY(0.9)}}
-@keyframes tB3{0%,100%{transform:rotate(138deg) scaleY(1)}40%{transform:rotate(138deg) scaleY(1.4)}75%{transform:rotate(138deg) scaleY(0.55)}}
-@keyframes tB4{0%,100%{transform:rotate(180deg) scaleY(1)}15%{transform:rotate(180deg) scaleY(0.6)}45%{transform:rotate(180deg) scaleY(1.5)}80%{transform:rotate(180deg) scaleY(0.85)}}
-@keyframes tB5{0%,100%{transform:rotate(222deg) scaleY(1)}30%{transform:rotate(222deg) scaleY(1.45)}60%{transform:rotate(222deg) scaleY(0.55)}}
-@keyframes tB6{0%,100%{transform:rotate(267deg) scaleY(1)}20%{transform:rotate(267deg) scaleY(0.5)}50%{transform:rotate(267deg) scaleY(1.5)}80%{transform:rotate(267deg) scaleY(1.1)}}
-@keyframes tB7{0%,100%{transform:rotate(318deg) scaleY(1)}35%{transform:rotate(318deg) scaleY(0.55)}65%{transform:rotate(318deg) scaleY(1.4)}}
-.spotlight-inner{position:absolute;display:flex;flex-direction:column;align-items:center;justify-content:center;inset:0;}
+#spotlight svg{width:100%;height:100%;overflow:visible;animation:spotRotate 12s linear infinite;}
+#spotlight .spotlight-inner{position:absolute;top:50%;left:50%;width:220px;height:220px;border-radius:50%;transform:translate(-50%,-50%);overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+#spotlight.venom svg{animation:spotRotate 3s linear infinite;}
+#spotlight.venom #spotPath{transform-origin:center;animation:tentacleExtend 0.5s cubic-bezier(0.25,0.1,0.25,1);}
+@keyframes spotRotate{0%{transform:rotate(0deg) scale(1)}50%{transform:rotate(8deg) scale(1.03)}100%{transform:rotate(0deg) scale(1)}}
+@keyframes tentacleExtend{0%{transform:scale(1)}40%{transform:scale(1.15)}100%{transform:scale(1)}}
 /* ============ END SPOTLIGHT ============ */
 /* ============ LEAF CURSOR ============ */
   #leaf-cursor { position: fixed; z-index: 9999; pointer-events: none; width: 18px; height: auto; transition: transform 0.08s ease-out; }
@@ -952,7 +931,7 @@ document.addEventListener('DOMContentLoaded', () => Forest.init());
   
   <!-- SPOTLIGHT BLACK CIRCLE -->
   <div id="spotlight">
-    <span class="tentacle t0"></span><span class="tentacle t1"></span><span class="tentacle t2"></span><span class="tentacle t3"></span><span class="tentacle t4"></span><span class="tentacle t5"></span><span class="tentacle t6"></span><span class="tentacle t7"></span>
+    <svg viewBox="-170 -170 340 340"><path id="spotPath" d="M -18.0 -115.0 A 110 110 0 0 0 -21.9 -107.8 C -20.5 -136.0 0.0 -170.5 11.9 -148.0 C 21.9 -107.8 21.9 -107.8 21.9 -107.8 A 110 110 0 0 1 95.8 -54.1 C 123.0 -61.6 162.2 -52.7 144.4 -34.5 C 109.3 -12.5 109.3 -12.5 109.3 -12.5 A 110 110 0 0 0 81.0 74.4 C 96.5 97.9 100.2 137.9 77.4 126.7 C 45.7 100.1 45.7 100.1 45.7 100.1 A 110 110 0 0 1 -45.7 100.1 C -63.3 122.1 -100.2 137.9 -96.6 112.8 C -81.0 74.4 -81.0 74.4 -81.0 74.4 A 110 110 0 0 0 -109.3 -12.5 C -135.7 -22.5 -162.2 -52.7 -137.1 -57.0 C -95.8 -54.1 -95.8 -54.1 -95.8 -54.1 Z" fill="#0a0a0a"/></svg>
     <div class="spotlight-inner">
       <h1 class="hero-title" style="color:#fff;text-shadow:none;font-size:clamp(28px,5vw,70px)">你好，我是宋宇</h1>
       <div class="hero-line" style="background:rgba(255,255,255,0.4)"></div>
@@ -989,7 +968,8 @@ document.addEventListener('DOMContentLoaded', () => Forest.init());
   document.addEventListener('mouseleave',function(){spotlight.classList.remove('visible');});
   function sync(){
     var hr=hero.getBoundingClientRect(), sr=spotlight.getBoundingClientRect();
-    inner.style.left=(hr.left-sr.left)+'px'; inner.style.top=(hr.top-sr.top)+'px';
+    var cx=sr.left+sr.width/2, cy=sr.top+sr.height/2;
+    inner.style.left=(hr.left-cx+110)+'px'; inner.style.top=(hr.top-cy+110)+'px';
     inner.style.width=hr.width+'px'; inner.style.height=hr.height+'px';
   }
   function anim(){
