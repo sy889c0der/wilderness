@@ -403,25 +403,26 @@ function animate() {
   controls.update();
   
   // Project 3D Sprites to screen → update .dt positions for spotlight tracking
-  if (window.decoSprites && allDt.length > 0) {
+  const _dt = window.allDtRef || allDt;
+  if (window.decoSprites && _dt.length > 0) {
     const hw = window.innerWidth / 2;
     const hh = window.innerHeight / 2;
     window.decoSprites.forEach((sprite, i) => {
-      if (i >= allDt.length) return;
+      if (i >= _dt.length) return;
       const v = sprite.position.clone().project(camera);
       // Check if sprite is in front of camera and on screen
       if (v.z < 1) {
         const sx = (v.x * hw) + hw;
         const sy = -(v.y * hh) + hh;
-        allDt[i].style.left = sx + "px";
-        allDt[i].style.top = sy + "px";
+        _dt[i].style.left = sx + "px";
+        _dt[i].style.top = sy + "px";
         // Keep element roughly sized for spotlight hit detection
         const sw = sprite.scale.x * 300;
-        allDt[i].style.width = sw + "px";
-        allDt[i].style.height = (sprite.scale.y * 200) + "px";
-        allDt[i].style.display = "";
+        _dt[i].style.width = sw + "px";
+        _dt[i].style.height = (sprite.scale.y * 200) + "px";
+        _dt[i].style.display = "";
       } else {
-        allDt[i].style.display = "none"; // behind camera
+        _dt[i].style.display = "none"; // behind camera
       }
     });
   }
@@ -475,8 +476,9 @@ allDt.forEach((el) => {
 });
 
 function syncSpotClones() {
+  const _dt = window.allDtRef || allDt;
   const sr = miniSpot.getBoundingClientRect();
-  allDt.forEach((el, i) => {
+  _dt.forEach((el, i) => {
     const r = el.getBoundingClientRect();
     const clone = spotInner.children[i];
     if (clone) {
