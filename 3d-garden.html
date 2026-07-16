@@ -25,23 +25,20 @@ canvas{display:block}
 #blur-overlay{position:fixed;inset:0;z-index:80;background:rgba(255,255,255,.08);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);opacity:0;visibility:hidden;transition:opacity .5s,visibility .5s;cursor:pointer}
 #blur-overlay.show{opacity:1;visibility:visible}
 
-/* ---- Portfolio cards ---- */
-.cards-container{position:fixed;inset:0;z-index:90;display:flex;align-items:center;justify-content:center;gap:40px;pointer-events:none;opacity:0;transition:opacity .6s}
+/* ---- Focus cards (side column, gossamer glass) ---- */
+.cards-container{position:fixed;top:50%;right:40px;z-index:90;display:flex;flex-direction:column;gap:20px;transform:translateY(-50%);pointer-events:none;opacity:0;transition:opacity .5s}
 .cards-container.show{opacity:1}
-.card{pointer-events:auto;width:300px;background:rgba(255,255,255,.15);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.2);border-radius:24px;padding:32px 24px;text-align:center;color:#fff;box-shadow:0 24px 80px rgba(0,0,0,.25);animation:floatCard 5s ease-in-out infinite}
-.card:nth-child(1){transform:translate(-20px, -30px);animation-delay:0s}
-.card:nth-child(2){transform:translate(0px, 15px);animation-delay:1s}
-.card:nth-child(3){transform:translate(20px, -25px);animation-delay:2s}
-@keyframes floatCard{0%,100%{transform:translateY(-6px)}50%{transform:translateY(6px)}}
-.card:nth-child(1){animation-name:floatC1}
-.card:nth-child(2){animation-name:floatC2}
-.card:nth-child(3){animation-name:floatC3}
-@keyframes floatC1{0%,100%{transform:translate(-20px, -33px)}50%{transform:translate(-20px, -27px)}}
-@keyframes floatC2{0%,100%{transform:translate(0px, 12px)}50%{transform:translate(0px, 18px)}}
-@keyframes floatC3{0%,100%{transform:translate(20px, -28px)}50%{transform:translate(20px, -22px)}}
-.card .card-img{width:100%;height:130px;background:rgba(255,255,255,.06);border-radius:14px;margin-bottom:18px;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.25);font-size:36px}
-.card h3{font-family:'Playfair Display','Georgia',serif;font-size:18px;font-weight:400;font-style:italic;margin-bottom:8px;letter-spacing:3px}
-.card p{font-size:12px;color:rgba(255,255,255,.45);line-height:1.8;font-family:'Inter',sans-serif;letter-spacing:0.5px}
+.card{pointer-events:auto;width:240px;background:rgba(255,255,255,.05);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:24px 20px;color:#fff;animation:cardSlideIn .6s cubic-bezier(0.25,0.1,0.25,1) both}
+.card:nth-child(1){animation-delay:0s}
+.card:nth-child(2){animation-delay:.1s}
+.card:nth-child(3){animation-delay:.2s}
+@keyframes cardSlideIn{0%{opacity:0;transform:translateX(30px)}100%{opacity:1;transform:translateX(0)}}
+.card .card-img{width:100%;height:90px;background:rgba(255,255,255,.04);border-radius:10px;margin-bottom:14px;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.2);font-size:28px}
+.card h3{font-family:'Playfair Display','Georgia',serif;font-size:16px;font-weight:400;font-style:italic;margin-bottom:6px;letter-spacing:2px}
+.card p{font-size:11px;color:rgba(255,255,255,.4);line-height:1.7;font-family:'Inter',sans-serif;letter-spacing:0.3px}
+#close-focus{position:fixed;top:28px;right:40px;z-index:95;background:rgba(255,255,255,.06);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);border:1px solid rgba(255,255,255,.12);border-radius:20px;padding:8px 18px;color:rgba(255,255,255,.5);font-size:12px;letter-spacing:2px;cursor:pointer;opacity:0;transition:opacity .5s;pointer-events:none}
+#close-focus.show{opacity:1;pointer-events:auto}
+#close-focus:hover{background:rgba(255,255,255,.1);color:#fff}
 
 /* ---- Hint ---- */
 #hint{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);z-index:30;color:rgba(255,255,255,.35);font-size:12px;letter-spacing:2px;pointer-events:none;transition:opacity 1s}
@@ -158,6 +155,7 @@ canvas{display:block}
     <p>Handcrafted fence marking the boundary of this hidden sanctuary.</p>
   </div>
 </div>
+<button id="close-focus" onclick="unfocus()">← BACK</button>
 
 <div id="cors-help">
   <div class="cors-box">
@@ -281,6 +279,7 @@ function focusOn(worldPoint) {
   controls.autoRotate = false;
   blurOverlay.classList.add("show");
   cardsContainer.classList.add("show");
+  document.getElementById("close-focus").classList.add("show");
 }
 
 function unfocus() {
@@ -290,6 +289,7 @@ function unfocus() {
   controls.autoRotate = true;
   blurOverlay.classList.remove("show");
   cardsContainer.classList.remove("show");
+  document.getElementById("close-focus").classList.remove("show");
 }
 
 blurOverlay.addEventListener("click", unfocus);
