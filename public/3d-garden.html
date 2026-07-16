@@ -66,23 +66,23 @@ canvas{display:block}
 /* ---- Mini Spotlight (physical occlusion) ---- */
 #mini-spot{position:fixed;z-index:999;pointer-events:none;width:60px;height:60px;border-radius:50%;background:#000;transform:translate(-50%,-50%);opacity:0;transition:opacity 0.2s;overflow:hidden;animation:spotFloat 4s ease-in-out infinite;}
 #mini-spot.show{opacity:1}
-#mini-spot .tentacle{position:absolute;border-radius:50%;background:#000;opacity:0.88;transform-origin:center bottom;}
-#mini-spot .t0{left:27px;top:-10px;width:6px;height:18px;animation:tBSm0 2.8s ease-in-out infinite;}
-#mini-spot .t1{left:48px;top:8px;width:5px;height:16px;transform:rotate(45deg);animation:tBSm1 3.1s ease-in-out infinite 0.4s;}
-#mini-spot .t2{left:52px;top:24px;width:6px;height:18px;transform:rotate(90deg);animation:tBSm2 2.6s ease-in-out infinite 0.9s;}
-#mini-spot .t3{left:48px;top:40px;width:5px;height:16px;transform:rotate(135deg);animation:tBSm3 3.3s ease-in-out infinite 0.2s;}
-#mini-spot .t4{left:27px;top:52px;width:6px;height:18px;transform:rotate(180deg);animation:tBSm4 2.9s ease-in-out infinite 0.7s;}
-#mini-spot .t5{left:7px;top:40px;width:5px;height:16px;transform:rotate(225deg);animation:tBSm5 3.0s ease-in-out infinite 1.1s;}
-#mini-spot .t6{left:2px;top:24px;width:6px;height:18px;transform:rotate(270deg);animation:tBSm6 2.7s ease-in-out infinite 0.5s;}
-#mini-spot .t7{left:7px;top:8px;width:5px;height:16px;transform:rotate(315deg);animation:tBSm7 3.2s ease-in-out infinite 0.8s;}
-@keyframes tBSm0{0%,100%{transform:scaleY(1)}30%{transform:scaleY(1.4)}65%{transform:scaleY(0.75)}}
-@keyframes tBSm1{0%,100%{transform:rotate(45deg) scaleY(1)}30%{transform:rotate(45deg) scaleY(1.35)}65%{transform:rotate(45deg) scaleY(0.7)}}
-@keyframes tBSm2{0%,100%{transform:rotate(90deg) scaleY(1)}35%{transform:rotate(90deg) scaleY(1.45)}60%{transform:rotate(90deg) scaleY(0.8)}}
-@keyframes tBSm3{0%,100%{transform:rotate(135deg) scaleY(1)}25%{transform:rotate(135deg) scaleY(1.3)}70%{transform:rotate(135deg) scaleY(0.75)}}
-@keyframes tBSm4{0%,100%{transform:rotate(180deg) scaleY(1)}40%{transform:rotate(180deg) scaleY(1.4)}60%{transform:rotate(180deg) scaleY(0.7)}}
-@keyframes tBSm5{0%,100%{transform:rotate(225deg) scaleY(1)}30%{transform:rotate(225deg) scaleY(1.35)}55%{transform:rotate(225deg) scaleY(0.8)}}
-@keyframes tBSm6{0%,100%{transform:rotate(270deg) scaleY(1)}35%{transform:rotate(270deg) scaleY(1.4)}70%{transform:rotate(270deg) scaleY(0.75)}}
-@keyframes tBSm7{0%,100%{transform:rotate(315deg) scaleY(1)}25%{transform:rotate(315deg) scaleY(1.3)}60%{transform:rotate(315deg) scaleY(0.75)}}
+#mini-spot .tentacle{position:absolute;background:#000;opacity:0.9;transform-origin:50% 100%;border-radius:40% 40% 0 0;}
+#mini-spot .t0{left:28px;top:-12px;width:4px;height:20px;animation:tBSm0 3.4s ease-in-out infinite;}
+#mini-spot .t1{left:48px;top:7px;width:3px;height:17px;transform:rotate(42deg);animation:tBSm1 3.0s ease-in-out infinite 0.6s;}
+#mini-spot .t2{left:54px;top:26px;width:4px;height:19px;transform:rotate(93deg);animation:tBSm2 3.6s ease-in-out infinite 0.3s;}
+#mini-spot .t3{left:48px;top:45px;width:3px;height:16px;transform:rotate(138deg);animation:tBSm3 2.8s ease-in-out infinite 1.0s;}
+#mini-spot .t4{left:28px;top:54px;width:4px;height:20px;transform:rotate(180deg);animation:tBSm4 3.2s ease-in-out infinite 0.7s;}
+#mini-spot .t5{left:9px;top:45px;width:3px;height:17px;transform:rotate(222deg);animation:tBSm5 3.5s ease-in-out infinite 0.4s;}
+#mini-spot .t6{left:2px;top:26px;width:4px;height:18px;transform:rotate(267deg);animation:tBSm6 2.9s ease-in-out infinite 0.9s;}
+#mini-spot .t7{left:9px;top:7px;width:3px;height:16px;transform:rotate(318deg);animation:tBSm7 3.3s ease-in-out infinite 0.2s;}
+@keyframes tBSm0{0%,100%{transform:scaleY(1)}20%{transform:scaleY(1.5)}55%{transform:scaleY(0.6)}80%{transform:scaleY(1.2)}}
+@keyframes tBSm1{0%,100%{transform:rotate(42deg) scaleY(1)}35%{transform:rotate(42deg) scaleY(1.4)}70%{transform:rotate(42deg) scaleY(0.55)}}
+@keyframes tBSm2{0%,100%{transform:rotate(93deg) scaleY(1)}25%{transform:rotate(93deg) scaleY(0.5)}50%{transform:rotate(93deg) scaleY(1.55)}85%{transform:rotate(93deg) scaleY(0.85)}}
+@keyframes tBSm3{0%,100%{transform:rotate(138deg) scaleY(1)}40%{transform:rotate(138deg) scaleY(1.45)}75%{transform:rotate(138deg) scaleY(0.5)}}
+@keyframes tBSm4{0%,100%{transform:rotate(180deg) scaleY(1)}15%{transform:rotate(180deg) scaleY(0.55)}45%{transform:rotate(180deg) scaleY(1.55)}80%{transform:rotate(180deg) scaleY(0.8)}}
+@keyframes tBSm5{0%,100%{transform:rotate(222deg) scaleY(1)}30%{transform:rotate(222deg) scaleY(1.5)}60%{transform:rotate(222deg) scaleY(0.5)}}
+@keyframes tBSm6{0%,100%{transform:rotate(267deg) scaleY(1)}20%{transform:rotate(267deg) scaleY(0.45)}50%{transform:rotate(267deg) scaleY(1.55)}80%{transform:rotate(267deg) scaleY(1.05)}}
+@keyframes tBSm7{0%,100%{transform:rotate(318deg) scaleY(1)}35%{transform:rotate(318deg) scaleY(0.5)}65%{transform:rotate(318deg) scaleY(1.45)}}
 @keyframes spotFloat{0%,100%{margin-top:-1px}50%{margin-top:1px}}
 #spot-inner{position:absolute;width:100vw;height:100vh;pointer-events:none}
 #spot-inner .sc{position:absolute;font-family:'Playfair Display','Cormorant Garamond','Georgia',serif;font-weight:700;white-space:nowrap;color:#fff;text-shadow:0 0 12px rgba(255,255,255,0.3);text-align:center;display:flex;align-items:center;justify-content:center}
