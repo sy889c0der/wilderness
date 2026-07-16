@@ -154,32 +154,25 @@
   
 
 /* ============ SPOTLIGHT BLACK CIRCLE ============ */
-#spotlight{position:fixed;z-index:999;pointer-events:none;width:220px;height:220px;border-radius:50%;background:#0a0a0a;transform:translate(-50%,-50%);opacity:0;transition:opacity 0.25s ease;overflow:visible;}
+#spotlight{position:fixed;z-index:999;pointer-events:none;width:220px;height:220px;border-radius:50%;background:#0a0a0a;transform:translate(-50%,-50%);opacity:0;transition:opacity 0.25s ease;overflow:hidden;animation:tentacleFluid 3.5s ease-in-out infinite;}
 #spotlight.visible{opacity:1;}
-/* Fluid tentacle pseudo-elements */
-#spotlight::before,#spotlight::after{content:'';position:absolute;top:50%;left:50%;width:100%;height:100%;border-radius:50%;transform:translate(-50%,-50%);pointer-events:none;z-index:-1;}
-#spotlight::before{animation:tentacleA 3.2s ease-in-out infinite;}
-#spotlight::after{animation:tentacleB 3.8s ease-in-out infinite 1.2s;}
-#spotlight.venom::before{animation:tentacleBurst 0.6s cubic-bezier(0.25,0.1,0.25,1);}
-#spotlight.venom::after{animation:tentacleBurst 0.6s cubic-bezier(0.25,0.1,0.25,1) 0.15s;}
-@keyframes tentacleA{
-  0%,100%{box-shadow:18px -12px 32px 6px rgba(0,0,0,0.7),-14px 22px 28px 4px rgba(0,0,0,0.6),22px 14px 36px 8px rgba(0,0,0,0.5),-18px -18px 24px 5px rgba(0,0,0,0.6);transform:translate(-50%,-50%) rotate(0deg);}
-  25%{box-shadow:28px -5px 34px 7px rgba(0,0,0,0.7),-10px 18px 26px 5px rgba(0,0,0,0.5),18px 18px 38px 6px rgba(0,0,0,0.6),-22px -14px 28px 6px rgba(0,0,0,0.5);transform:translate(-50%,-50%) rotate(3deg);}
-  50%{box-shadow:14px -18px 30px 5px rgba(0,0,0,0.6),-22px 14px 34px 7px rgba(0,0,0,0.7),24px 10px 34px 5px rgba(0,0,0,0.5),-14px -24px 26px 7px rgba(0,0,0,0.6);transform:translate(-50%,-50%) rotate(-2deg);}
-  75%{box-shadow:24px -10px 28px 8px rgba(0,0,0,0.5),-18px 26px 30px 5px rgba(0,0,0,0.6),16px 24px 34px 7px rgba(0,0,0,0.7),-26px -10px 24px 6px rgba(0,0,0,0.5);transform:translate(-50%,-50%) rotate(1deg);}
-}
-@keyframes tentacleB{
-  0%,100%{box-shadow:-16px -14px 30px 5px rgba(0,0,0,0.6),22px -20px 34px 6px rgba(0,0,0,0.5),-24px 16px 28px 7px rgba(0,0,0,0.7),20px 22px 36px 5px rgba(0,0,0,0.5);transform:translate(-50%,-50%) rotate(0deg);}
-  33%{box-shadow:-10px -22px 32px 7px rgba(0,0,0,0.7),26px -14px 30px 5px rgba(0,0,0,0.5),-18px 22px 34px 6px rgba(0,0,0,0.6),28px 14px 32px 4px rgba(0,0,0,0.6);transform:translate(-50%,-50%) rotate(-3deg);}
-  66%{box-shadow:-22px -10px 28px 4px rgba(0,0,0,0.5),16px -26px 36px 7px rgba(0,0,0,0.6),-28px 12px 30px 5px rgba(0,0,0,0.5),14px 28px 34px 6px rgba(0,0,0,0.7);transform:translate(-50%,-50%) rotate(2deg);}
+#spotlight.venom{animation:tentacleBurst 0.6s cubic-bezier(0.25,0.1,0.25,1);}
+@keyframes tentacleFluid{
+  0%,100%{box-shadow:18px -12px 30px 6px rgba(0,0,0,0.65),-14px 22px 26px 4px rgba(0,0,0,0.55),22px 14px 34px 7px rgba(0,0,0,0.5),-18px -18px 22px 5px rgba(0,0,0,0.55);}
+  15%{box-shadow:26px -6px 32px 7px rgba(0,0,0,0.6),-10px 18px 24px 5px rgba(0,0,0,0.5),19px 20px 36px 6px rgba(0,0,0,0.55),-24px -12px 26px 5px rgba(0,0,0,0.5);}
+  30%{box-shadow:14px -20px 28px 5px rgba(0,0,0,0.55),-22px 14px 32px 7px rgba(0,0,0,0.65),26px 8px 32px 5px rgba(0,0,0,0.45),-14px -22px 24px 6px rgba(0,0,0,0.6);}
+  45%{box-shadow:22px -10px 27px 7px rgba(0,0,0,0.5),-18px 26px 29px 5px rgba(0,0,0,0.55),14px 22px 33px 6px rgba(0,0,0,0.6),-28px -8px 23px 5px rgba(0,0,0,0.5);}
+  60%{box-shadow:10px -16px 31px 6px rgba(0,0,0,0.6),-26px 10px 27px 5px rgba(0,0,0,0.5),24px 16px 35px 7px rgba(0,0,0,0.55),-16px -26px 25px 6px rgba(0,0,0,0.6);}
+  75%{box-shadow:20px -8px 29px 6px rgba(0,0,0,0.55),-14px 24px 30px 6px rgba(0,0,0,0.6),18px 18px 31px 5px rgba(0,0,0,0.5),-22px -16px 27px 5px rgba(0,0,0,0.55);}
+  90%{box-shadow:28px -14px 33px 8px rgba(0,0,0,0.5),-10px 18px 25px 4px rgba(0,0,0,0.55),25px 10px 34px 6px rgba(0,0,0,0.6),-18px -18px 23px 5px rgba(0,0,0,0.5);}
 }
 @keyframes tentacleBurst{
-  0%{box-shadow:18px -12px 32px 6px rgba(0,0,0,0.7),-14px 22px 28px 4px rgba(0,0,0,0.6),22px 14px 36px 8px rgba(0,0,0,0.5),-18px -18px 24px 5px rgba(0,0,0,0.6);transform:translate(-50%,-50%) rotate(0deg);}
-  35%{box-shadow:35px -20px 50px 14px rgba(0,0,0,0.75),-28px 35px 45px 12px rgba(0,0,0,0.65),38px 25px 55px 15px rgba(0,0,0,0.55),-32px -30px 40px 10px rgba(0,0,0,0.6);transform:translate(-50%,-50%) rotate(5deg);}
-  70%{box-shadow:20px -14px 38px 8px rgba(0,0,0,0.6),-16px 24px 32px 6px rgba(0,0,0,0.55),26px 16px 40px 10px rgba(0,0,0,0.6),-20px -20px 28px 7px rgba(0,0,0,0.55);transform:translate(-50%,-50%) rotate(-3deg);}
-  100%{box-shadow:18px -12px 32px 6px rgba(0,0,0,0.7),-14px 22px 28px 4px rgba(0,0,0,0.6),22px 14px 36px 8px rgba(0,0,0,0.5),-18px -18px 24px 5px rgba(0,0,0,0.6);transform:translate(-50%,-50%) rotate(0deg);}
+  0%{box-shadow:18px -12px 30px 6px rgba(0,0,0,0.65),-14px 22px 26px 4px rgba(0,0,0,0.55),22px 14px 34px 7px rgba(0,0,0,0.5),-18px -18px 22px 5px rgba(0,0,0,0.55);}
+  35%{box-shadow:35px -22px 50px 14px rgba(0,0,0,0.75),-30px 35px 45px 12px rgba(0,0,0,0.65),38px 25px 55px 16px rgba(0,0,0,0.55),-34px -30px 42px 11px rgba(0,0,0,0.6);}
+  70%{box-shadow:22px -14px 36px 8px rgba(0,0,0,0.6),-16px 26px 32px 6px rgba(0,0,0,0.55),26px 16px 40px 10px rgba(0,0,0,0.6),-22px -20px 28px 7px rgba(0,0,0,0.55);}
+  100%{box-shadow:18px -12px 30px 6px rgba(0,0,0,0.65),-14px 22px 26px 4px rgba(0,0,0,0.55),22px 14px 34px 7px rgba(0,0,0,0.5),-18px -18px 22px 5px rgba(0,0,0,0.55);}
 }
-.spotlight-inner{position:absolute;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:1;}
+.spotlight-inner{position:absolute;display:flex;flex-direction:column;align-items:center;justify-content:center;}
 /* ============ END SPOTLIGHT ============ */
 /* ============ LEAF CURSOR ============ */
   #leaf-cursor { position: fixed; z-index: 9999; pointer-events: none; width: 18px; height: auto; transition: transform 0.08s ease-out; }
