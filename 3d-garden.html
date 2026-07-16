@@ -79,7 +79,49 @@ canvas{display:block}
 </head>
 <body>
 
-<div id="dt-wrapper"></div>
+
+<div class="dt xl">WILDERNESS</div>
+<div class="dt md">into the deep woods</div>
+<div class="dt xs">find your path</div>
+<div class="dt sm">MIST &bull; PINE &bull; SHADOW</div>
+<div class="dt lg">SILENCE</div>
+<div class="dt xs">dream in the woods</div>
+<div class="dt xs">where roots drink from ancient earth</div>
+<div class="dt sm">MOSS &bull; STONE &bull; FERN</div>
+<div class="dt md">ROOTS</div>
+<div class="dt xs">ancient whispers</div>
+<div class="dt xs">beneath the canopy of stars</div>
+<div class="dt lg">NATURE</div>
+<div class="dt sm">wild &amp; free</div>
+<div class="dt sm">BARK &bull; LEAF &bull; DEW</div>
+<div class="dt md">DREAM</div>
+<div class="dt xs">lost in the sound of wind</div>
+<div class="dt xs">serene escape</div>
+<div class="dt sm">RIVER &bull; BRANCH &bull; NEST</div>
+<div class="dt md">WILD</div>
+<div class="dt xs">hidden springs</div>
+<div class="dt xl">SANCTUARY</div>
+<div class="dt md">a hidden refuge</div>
+<div class="dt xs">beyond the trees</div>
+<div class="dt sm">TIMBER &bull; HEARTH &bull; SMOKE</div>
+<div class="dt lg">WANDER</div>
+<div class="dt xs">moonlit path</div>
+<div class="dt xs">footsteps on forgotten trails</div>
+<div class="dt sm">PEAK &bull; CLOUD &bull; HAWK</div>
+<div class="dt md">FOREST</div>
+<div class="dt xs">gentle breeze</div>
+<div class="dt xs">cathedral of towering green</div>
+<div class="dt lg">EXPLORE</div>
+<div class="dt sm">into the wild</div>
+<div class="dt sm">CREEK &bull; HOLLOW &bull; GLADE</div>
+<div class="dt md">WHISPER</div>
+<div class="dt xs">the trees remember everything</div>
+<div class="dt md">DEEP</div>
+<div class="dt sm">THORN &bull; BLOOM &bull; SEED</div>
+<div class="dt md">RETURN</div>
+<div class="dt md">VAST</div>
+<div class="dt md">PURE</div>
+
 <div id="mini-spot"><div id="spot-inner"></div></div>
 <div id="loading">
   <div class="loader-ring"></div>
@@ -349,20 +391,6 @@ loader.load(modelUrl, (gltf) => {
   });
   console.log("[3D] Sprites created:", window.decoSprites.length);
 
-  const dtWrapper = document.getElementById("dt-wrapper");
-  textDefs.forEach(def => {
-    const el = document.createElement("div");
-    let s = "xs";
-    if (def.size >= 60) s = "xl";
-    else if (def.size >= 40) s = "lg";
-    else if (def.size >= 28) s = "md";
-    else if (def.size >= 16) s = "sm";
-    el.className = "dt " + s;
-    el.textContent = def.text;
-    dtWrapper.appendChild(el);
-  });
-  window.allDtRef = document.querySelectorAll(".dt");
-
 
 
   // Adjust camera - human eye level, front view
@@ -403,26 +431,25 @@ function animate() {
   controls.update();
   
   // Project 3D Sprites to screen → update .dt positions for spotlight tracking
-  const _dt = window.allDtRef || allDt;
-  if (window.decoSprites && _dt.length > 0) {
+  if (window.decoSprites && allDt.length > 0) {
     const hw = window.innerWidth / 2;
     const hh = window.innerHeight / 2;
     window.decoSprites.forEach((sprite, i) => {
-      if (i >= _dt.length) return;
+      if (i >= allDt.length) return;
       const v = sprite.position.clone().project(camera);
       // Check if sprite is in front of camera and on screen
       if (v.z < 1) {
         const sx = (v.x * hw) + hw;
         const sy = -(v.y * hh) + hh;
-        _dt[i].style.left = sx + "px";
-        _dt[i].style.top = sy + "px";
+        allDt[i].style.left = sx + "px";
+        allDt[i].style.top = sy + "px";
         // Keep element roughly sized for spotlight hit detection
         const sw = sprite.scale.x * 300;
-        _dt[i].style.width = sw + "px";
-        _dt[i].style.height = (sprite.scale.y * 200) + "px";
-        _dt[i].style.display = "";
+        allDt[i].style.width = sw + "px";
+        allDt[i].style.height = (sprite.scale.y * 200) + "px";
+        allDt[i].style.display = "";
       } else {
-        _dt[i].style.display = "none"; // behind camera
+        allDt[i].style.display = "none"; // behind camera
       }
     });
   }
@@ -476,9 +503,8 @@ allDt.forEach((el) => {
 });
 
 function syncSpotClones() {
-  const _dt = window.allDtRef || allDt;
   const sr = miniSpot.getBoundingClientRect();
-  _dt.forEach((el, i) => {
+  allDt.forEach((el, i) => {
     const r = el.getBoundingClientRect();
     const clone = spotInner.children[i];
     if (clone) {
