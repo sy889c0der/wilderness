@@ -154,17 +154,32 @@
   
 
 /* ============ SPOTLIGHT BLACK CIRCLE ============ */
-#spotlight{position:fixed;z-index:999;pointer-events:none;width:220px;height:220px;border-radius:50%;background:#0a0a0a;transform:translate(-50%,-50%);opacity:0;transition:opacity 0.25s ease;overflow:hidden;}
+#spotlight{position:fixed;z-index:999;pointer-events:none;width:220px;height:220px;border-radius:50%;background:#0a0a0a;transform:translate(-50%,-50%);opacity:0;transition:opacity 0.25s ease;overflow:visible;}
 #spotlight.visible{opacity:1;}
-#spotlight.venom{animation:venomPulse 0.55s cubic-bezier(0.25,0.1,0.25,1);}
-@keyframes venomPulse{
-  0%{transform:translate(-50%,-50%) scale(1);box-shadow:0 0 0 0 rgba(0,0,0,0)}
-  30%{transform:translate(-50%,-50%) scale(1.25);box-shadow:0 0 30px 8px rgba(0,0,0,0.6),0 0 60px 16px rgba(0,0,0,0.4),0 0 100px 32px rgba(0,0,0,0.2)}
-  50%{transform:translate(-50%,-50%) scale(1.1);box-shadow:0 0 18px 4px rgba(0,0,0,0.4),0 0 40px 10px rgba(0,0,0,0.25)}
-  70%{transform:translate(-50%,-50%) scale(1.2);box-shadow:0 0 8px 2px rgba(0,0,0,0.3)}
-  100%{transform:translate(-50%,-50%) scale(1);box-shadow:0 0 0 0 rgba(0,0,0,0)}
+/* Fluid tentacle pseudo-elements */
+#spotlight::before,#spotlight::after{content:'';position:absolute;top:50%;left:50%;width:100%;height:100%;border-radius:50%;transform:translate(-50%,-50%);pointer-events:none;z-index:-1;}
+#spotlight::before{animation:tentacleA 3.2s ease-in-out infinite;}
+#spotlight::after{animation:tentacleB 3.8s ease-in-out infinite 1.2s;}
+#spotlight.venom::before{animation:tentacleBurst 0.6s cubic-bezier(0.25,0.1,0.25,1);}
+#spotlight.venom::after{animation:tentacleBurst 0.6s cubic-bezier(0.25,0.1,0.25,1) 0.15s;}
+@keyframes tentacleA{
+  0%,100%{box-shadow:18px -12px 32px 6px rgba(0,0,0,0.7),-14px 22px 28px 4px rgba(0,0,0,0.6),22px 14px 36px 8px rgba(0,0,0,0.5),-18px -18px 24px 5px rgba(0,0,0,0.6);transform:translate(-50%,-50%) rotate(0deg);}
+  25%{box-shadow:28px -5px 34px 7px rgba(0,0,0,0.7),-10px 18px 26px 5px rgba(0,0,0,0.5),18px 18px 38px 6px rgba(0,0,0,0.6),-22px -14px 28px 6px rgba(0,0,0,0.5);transform:translate(-50%,-50%) rotate(3deg);}
+  50%{box-shadow:14px -18px 30px 5px rgba(0,0,0,0.6),-22px 14px 34px 7px rgba(0,0,0,0.7),24px 10px 34px 5px rgba(0,0,0,0.5),-14px -24px 26px 7px rgba(0,0,0,0.6);transform:translate(-50%,-50%) rotate(-2deg);}
+  75%{box-shadow:24px -10px 28px 8px rgba(0,0,0,0.5),-18px 26px 30px 5px rgba(0,0,0,0.6),16px 24px 34px 7px rgba(0,0,0,0.7),-26px -10px 24px 6px rgba(0,0,0,0.5);transform:translate(-50%,-50%) rotate(1deg);}
 }
-.spotlight-inner{position:absolute;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+@keyframes tentacleB{
+  0%,100%{box-shadow:-16px -14px 30px 5px rgba(0,0,0,0.6),22px -20px 34px 6px rgba(0,0,0,0.5),-24px 16px 28px 7px rgba(0,0,0,0.7),20px 22px 36px 5px rgba(0,0,0,0.5);transform:translate(-50%,-50%) rotate(0deg);}
+  33%{box-shadow:-10px -22px 32px 7px rgba(0,0,0,0.7),26px -14px 30px 5px rgba(0,0,0,0.5),-18px 22px 34px 6px rgba(0,0,0,0.6),28px 14px 32px 4px rgba(0,0,0,0.6);transform:translate(-50%,-50%) rotate(-3deg);}
+  66%{box-shadow:-22px -10px 28px 4px rgba(0,0,0,0.5),16px -26px 36px 7px rgba(0,0,0,0.6),-28px 12px 30px 5px rgba(0,0,0,0.5),14px 28px 34px 6px rgba(0,0,0,0.7);transform:translate(-50%,-50%) rotate(2deg);}
+}
+@keyframes tentacleBurst{
+  0%{box-shadow:18px -12px 32px 6px rgba(0,0,0,0.7),-14px 22px 28px 4px rgba(0,0,0,0.6),22px 14px 36px 8px rgba(0,0,0,0.5),-18px -18px 24px 5px rgba(0,0,0,0.6);transform:translate(-50%,-50%) rotate(0deg);}
+  35%{box-shadow:35px -20px 50px 14px rgba(0,0,0,0.75),-28px 35px 45px 12px rgba(0,0,0,0.65),38px 25px 55px 15px rgba(0,0,0,0.55),-32px -30px 40px 10px rgba(0,0,0,0.6);transform:translate(-50%,-50%) rotate(5deg);}
+  70%{box-shadow:20px -14px 38px 8px rgba(0,0,0,0.6),-16px 24px 32px 6px rgba(0,0,0,0.55),26px 16px 40px 10px rgba(0,0,0,0.6),-20px -20px 28px 7px rgba(0,0,0,0.55);transform:translate(-50%,-50%) rotate(-3deg);}
+  100%{box-shadow:18px -12px 32px 6px rgba(0,0,0,0.7),-14px 22px 28px 4px rgba(0,0,0,0.6),22px 14px 36px 8px rgba(0,0,0,0.5),-18px -18px 24px 5px rgba(0,0,0,0.6);transform:translate(-50%,-50%) rotate(0deg);}
+}
+.spotlight-inner{position:absolute;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:1;}
 /* ============ END SPOTLIGHT ============ */
 /* ============ LEAF CURSOR ============ */
   #leaf-cursor { position: fixed; z-index: 9999; pointer-events: none; width: 18px; height: auto; transition: transform 0.08s ease-out; }
@@ -977,13 +992,14 @@ document.addEventListener('DOMContentLoaded', () => Forest.init());
     sx+=(mx-sx)*0.18; sy+=(my-sy)*0.18;
     spotlight.style.left=sx+'px'; spotlight.style.top=sy+'px';
     
-    // Venom pulse: detect overlap with hero section
+    // Venom pulse: detect overlap, trigger tentacle burst
     var hr = hero.getBoundingClientRect();
     var isOverHero = sx >= hr.left && sx <= hr.right && sy >= hr.top && sy <= hr.bottom;
     if (isOverHero && !wasOverHero) {
       spotlight.classList.remove('venom');
-      void spotlight.offsetWidth; // force reflow
+      void spotlight.offsetWidth;
       spotlight.classList.add('venom');
+      setTimeout(function(){ spotlight.classList.remove('venom'); }, 700);
     }
     wasOverHero = isOverHero;
     
