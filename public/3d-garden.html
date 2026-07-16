@@ -430,28 +430,47 @@ function animate() {
   requestAnimationFrame(animate);
   controls.update();
   
-  // Project 3D Sprites to screen → update .dt positions for spotlight tracking
+  // Project 3D Sprites to screen + dynamic depth opacity/blur
   if (window.decoSprites && allDt.length > 0) {
     const hw = window.innerWidth / 2;
     const hh = window.innerHeight / 2;
-    window.decoSprites.forEach((sprite, i) => {
-      if (i >= allDt.length) return;
+    const camPos = camera.position;
+    const numSprites = Math.min(window.decoSprites.length, allDt.length);
+    
+    // Pass 1: find min/max camera distance for smooth mapping
+    let minDist = Infinity, maxDist = -Infinity;
+    const dists = [];
+    for (let i = 0; i < numSprites; i++) {
+      const d = camPos.distanceTo(window.decoSprites[i].position);
+      dists.push(d);
+      if (d < minDist) minDist = d;
+      if (d > maxDist) maxDist = d;
+    }
+    const distRange = maxDist - minDist || 1;
+    
+    // Pass 2: update sprites & .dt positions
+    for (let i = 0; i < numSprites; i++) {
+      const sprite = window.decoSprites[i];
       const v = sprite.position.clone().project(camera);
-      // Check if sprite is in front of camera and on screen
       if (v.z < 1) {
         const sx = (v.x * hw) + hw;
         const sy = -(v.y * hh) + hh;
         allDt[i].style.left = sx + "px";
         allDt[i].style.top = sy + "px";
-        // Keep element roughly sized for spotlight hit detection
         const sw = sprite.scale.x * 300;
         allDt[i].style.width = sw + "px";
         allDt[i].style.height = (sprite.scale.y * 200) + "px";
         allDt[i].style.display = "";
       } else {
-        allDt[i].style.display = "none"; // behind camera
+        allDt[i].style.display = "none";
       }
-    });
+      
+      // Dynamic depth opacity: near=0.75 far=0.18, smooth lerp
+      const t = (dists[i] - minDist) / distRange;
+      const smooth = t * t * (3 - 2 * t); // smoothstep
+      const op = 0.75 + (0.18 - 0.75) * smooth;
+      sprite.material.opacity += (op - sprite.material.opacity) * 0.08; // lerp smooth
+    }
   }
   
   renderer.render(scene, camera);
