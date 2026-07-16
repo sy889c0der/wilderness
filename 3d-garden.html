@@ -79,37 +79,7 @@ canvas{display:block}
 </head>
 <body>
 
-
-
-<div class="dt xl" style="top:3%;left:2%">WILDERNESS</div>
-<div class="dt md" style="top:10%;left:1%">into the deep woods</div>
-<div class="dt sm" style="top:14%;left:3%">MIST &bull; PINE &bull; SHADOW</div>
-<div class="dt lg" style="top:20%;left:2%">SILENCE</div>
-<div class="dt xs" style="top:27%;left:4%">where roots drink from ancient earth</div>
-<div class="dt sm" style="top:32%;left:1%">MOSS &bull; STONE &bull; FERN</div>
-<div class="dt md" style="top:40%;left:3%">ROOTS</div>
-<div class="dt xs" style="top:47%;left:2%">beneath the canopy of stars</div>
-<div class="dt lg" style="top:52%;left:1%">NATURE</div>
-<div class="dt sm" style="top:62%;left:3%">BARK &bull; LEAF &bull; DEW</div>
-<div class="dt md" style="top:70%;left:2%">DREAM</div>
-<div class="dt xs" style="top:78%;left:4%">lost in the sound of wind</div>
-<div class="dt sm" style="top:85%;left:1%">RIVER &bull; BRANCH &bull; NEST</div>
-
-<div class="dt xl" style="top:2%;right:3%">SANCTUARY</div>
-<div class="dt md" style="top:9%;right:2%">a hidden refuge</div>
-<div class="dt sm" style="top:13%;right:1%">TIMBER &bull; HEARTH &bull; SMOKE</div>
-<div class="dt lg" style="top:19%;right:3%">WANDER</div>
-<div class="dt xs" style="top:26%;right:2%">footsteps on forgotten trails</div>
-<div class="dt sm" style="top:31%;right:4%">PEAK &bull; CLOUD &bull; HAWK</div>
-<div class="dt md" style="top:38%;right:1%">FOREST</div>
-<div class="dt xs" style="top:45%;right:3%">cathedral of towering green</div>
-<div class="dt lg" style="top:50%;right:2%">EXPLORE</div>
-<div class="dt sm" style="top:60%;right:1%">CREEK &bull; HOLLOW &bull; GLADE</div>
-<div class="dt md" style="top:68%;right:3%">WHISPER</div>
-<div class="dt xs" style="top:75%;right:2%">the trees remember everything</div>
-<div class="dt sm" style="top:82%;right:4%">THORN &bull; BLOOM &bull; SEED</div>
-<div class="dt md" style="top:90%;right:1%">RETURN</div>
-
+<div id="dt-wrapper"></div>
 <div id="mini-spot"><div id="spot-inner"></div></div>
 <div id="loading">
   <div class="loader-ring"></div>
@@ -379,6 +349,20 @@ loader.load(modelUrl, (gltf) => {
   });
   console.log("[3D] Sprites created:", window.decoSprites.length);
 
+  const dtWrapper = document.getElementById("dt-wrapper");
+  textDefs.forEach(def => {
+    const el = document.createElement("div");
+    let s = "xs";
+    if (def.size >= 60) s = "xl";
+    else if (def.size >= 40) s = "lg";
+    else if (def.size >= 28) s = "md";
+    else if (def.size >= 16) s = "sm";
+    el.className = "dt " + s;
+    el.textContent = def.text;
+    dtWrapper.appendChild(el);
+  });
+  window.allDtRef = document.querySelectorAll(".dt");
+
 
 
   // Adjust camera - human eye level, front view
@@ -449,7 +433,7 @@ animate();
 // ---- Mini Spotlight (Chinese translations inside black circle) ----
 const miniSpot = document.getElementById("mini-spot");
 const spotInner = document.getElementById("spot-inner");
-const allDt = document.querySelectorAll(".dt");
+let allDt = document.querySelectorAll(".dt");
 let spotMX = -500, spotMY = -500, spotSX = -500, spotSY = -500;
 
 // Mapping: English text → Chinese translation
@@ -471,7 +455,13 @@ const zhMap = {
   "TIMBER • HEARTH • SMOKE":"木·炉·烟",
   "PEAK • CLOUD • HAWK":"峰·云·鹰",
   "CREEK • HOLLOW • GLADE":"溪·谷·林",
-  "THORN • BLOOM • SEED":"刺·花·种"
+  "THORN • BLOOM • SEED":"刺·花·种",
+  "find your path":"找到你的路","dream in the woods":"林中之梦",
+  "ancient whispers":"远古低语","wild & free":"狂野自由",
+  "serene escape":"宁静逃离","hidden springs":"隐秘之泉",
+  "WILD":"狂野","beyond the trees":"树之外",
+  "moonlit path":"月光小径","gentle breeze":"微风",
+  "into the wild":"深入荒野","DEEP":"深邃","VAST":"辽阔","PURE":"纯净"
 };
 
 // Build Chinese clones inside spot-inner
