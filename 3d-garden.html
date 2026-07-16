@@ -359,7 +359,7 @@ loader.load(modelUrl, (gltf) => {
     cvs.height = def.size * 1.4 * scale;
     const ctx = cvs.getContext("2d");
     ctx.scale(scale, scale);
-    ctx.fillStyle = "rgba(255,255,255,0.55)";
+    ctx.fillStyle = "rgba(255,255,255,0.85)";
     ctx.font = ${def.size <= 18 ? 700 : 300} px 'Playfair Display','Georgia',serif;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
@@ -367,10 +367,10 @@ loader.load(modelUrl, (gltf) => {
     const tex = new THREE.CanvasTexture(cvs);
     tex.colorSpace = THREE.SRGBColorSpace;
     tex.minFilter = THREE.LinearFilter;
-    const mat = new THREE.SpriteMaterial({ map: tex, transparent: true, depthTest: true, depthWrite: false, opacity: 0.22 });
+    const mat = new THREE.SpriteMaterial({ map: tex, transparent: true, depthTest: true, depthWrite: false, opacity: 0.35 });
     const sprite = new THREE.Sprite(mat);
     const aspect = cvs.width / cvs.height;
-    const h = def.size / 40;
+    const h = def.size / 28;
     sprite.scale.set(h * aspect, h, 1);
     sprite.position.set(def.x, def.y, def.z);
     sprite.renderOrder = 0;
