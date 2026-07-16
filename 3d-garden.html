@@ -55,7 +55,7 @@ canvas{display:block}
 
 
 /* ---- Fixed decorative text ---- */
-.dt{position:fixed;pointer-events:none;font-family:'Playfair Display','Georgia',serif;font-weight:300;letter-spacing:6px;white-space:nowrap;user-select:none;z-index:5;opacity:0;visibility:visible}
+.dt{position:fixed;pointer-events:none;font-family:'Playfair Display','Georgia',serif;font-weight:300;letter-spacing:6px;white-space:nowrap;user-select:none;z-index:5;opacity:0;visibility:visible;transform:translate(-50%,-50%)}
 .dt.xl{font-size:60px;color:rgba(255,255,255,0.07)}
 .dt.lg{font-size:42px;color:rgba(255,255,255,0.10)}
 .dt.md{font-size:28px;color:rgba(255,255,255,0.14)}
@@ -417,6 +417,31 @@ window.addEventListener("resize", () => {
 function animate() {
   requestAnimationFrame(animate);
   controls.update();
+  
+  // Project 3D Sprites to screen → update .dt positions for spotlight tracking
+  if (window.decoSprites && allDt.length > 0) {
+    const hw = window.innerWidth / 2;
+    const hh = window.innerHeight / 2;
+    window.decoSprites.forEach((sprite, i) => {
+      if (i >= allDt.length) return;
+      const v = sprite.position.clone().project(camera);
+      // Check if sprite is in front of camera and on screen
+      if (v.z < 1) {
+        const sx = (v.x * hw) + hw;
+        const sy = -(v.y * hh) + hh;
+        allDt[i].style.left = sx + "px";
+        allDt[i].style.top = sy + "px";
+        // Keep element roughly sized for spotlight hit detection
+        const sw = sprite.scale.x * 300;
+        allDt[i].style.width = sw + "px";
+        allDt[i].style.height = (sprite.scale.y * 200) + "px";
+        allDt[i].style.display = "";
+      } else {
+        allDt[i].style.display = "none"; // behind camera
+      }
+    });
+  }
+  
   renderer.render(scene, camera);
 }
 animate();
