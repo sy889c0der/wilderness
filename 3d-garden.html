@@ -252,7 +252,7 @@ const mouse = new THREE.Vector2();
 
 function onPointerDown(e) {
   if (blurOverlay.classList.contains("show")) {
-    closeCards();
+    unfocus();
     return;
   }
   mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
@@ -260,21 +260,39 @@ function onPointerDown(e) {
   raycaster.setFromCamera(mouse, camera);
   const hits = raycaster.intersectObjects(clickable, false);
   if (hits.length > 0) {
-    showCards();
+    const pt = hits[0].point.clone();
+    focusOn(pt);
   }
 }
 
-function showCards() {
+let isFocused = false, focusLerp = 0;
+let focusTarget = new THREE.Vector3(), originalCamPos = new THREE.Vector3();
+let originalTarget = new THREE.Vector3(), targetCamPos = new THREE.Vector3();
+let targetLookAt = new THREE.Vector3();
+
+function focusOn(worldPoint) {
+  originalCamPos.copy(camera.position);
+  originalTarget.copy(controls.target);
+  focusTarget.copy(worldPoint);
+  const dir = camera.position.clone().sub(worldPoint).normalize();
+  targetCamPos.copy(worldPoint).add(dir.multiplyScalar(3.5));
+  targetLookAt.copy(worldPoint);
+  isFocused = true; focusLerp = 0;
+  controls.autoRotate = false;
   blurOverlay.classList.add("show");
   cardsContainer.classList.add("show");
 }
 
-function closeCards() {
+function unfocus() {
+  targetCamPos.copy(originalCamPos);
+  targetLookAt.copy(originalTarget);
+  isFocused = false; focusLerp = 0;
+  controls.autoRotate = true;
   blurOverlay.classList.remove("show");
   cardsContainer.classList.remove("show");
 }
 
-blurOverlay.addEventListener("click", closeCards);
+blurOverlay.addEventListener("click", unfocus);
 window.addEventListener("pointerdown", onPointerDown);
 window.addEventListener("keydown", (e) => { if (e.key === "Escape") closeCards(); });
 
@@ -433,8 +451,25 @@ window.addEventListener("resize", () => {
 });
 
 // ---- Animate ----
+const canvas3d = document.querySelector("canvas");
 function animate() {
   requestAnimationFrame(animate);
+  
+  // Camera focus lerp
+  if (isFocused || (!isFocused && focusLerp > 0)) {
+    focusLerp = Math.min(1, focusLerp + 0.03);
+    const t = focusLerp * focusLerp * (3 - 2 * focusLerp); // smoothstep
+    camera.position.lerpVectors(originalCamPos, targetCamPos, t);
+    controls.target.lerpVectors(
+      isFocused ? originalTarget : focusTarget,
+      isFocused ? targetLookAt : originalTarget,
+      t
+    );
+    if (canvas3d) {
+      const blurAmt = (isFocused ? t : 1 - t) * 4;
+      canvas3d.style.filter = blurAmt > 0.2 ? "blur(" + blurAmt.toFixed(1) + "px)" : "";
+    }
+  }
   controls.update();
   
   // Project 3D Sprites to screen + dynamic depth opacity/blur
