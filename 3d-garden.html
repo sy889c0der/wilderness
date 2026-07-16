@@ -360,7 +360,7 @@ loader.load(modelUrl, (gltf) => {
     const ctx = cvs.getContext("2d");
     ctx.scale(scale, scale);
     ctx.fillStyle = "rgba(255,255,255,0.85)";
-    ctx.font = ${def.size <= 18 ? 700 : 300} px 'Playfair Display','Georgia',serif;
+    ctx.font = (def.size <= 18 ? 700 : 300) + " " + def.size + "px 'Playfair Display','Georgia',serif";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillText(def.text, cvs.width/scale/2, cvs.height/scale/2);
