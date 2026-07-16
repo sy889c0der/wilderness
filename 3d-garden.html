@@ -259,7 +259,8 @@ function onPointerDown(e) {
   const hits = raycaster.intersectObjects(clickable, false);
   if (hits.length > 0) {
     const pt = hits[0].point.clone();
-    focusOn(pt);
+    const obj = hits[0].object;
+    focusOn(pt, obj);
   }
 }
 
@@ -268,7 +269,7 @@ let focusTarget = new THREE.Vector3(), originalCamPos = new THREE.Vector3();
 let originalTarget = new THREE.Vector3(), targetCamPos = new THREE.Vector3();
 let targetLookAt = new THREE.Vector3();
 
-function focusOn(worldPoint) {
+function focusOn(worldPoint, hitObject) {
   originalCamPos.copy(camera.position);
   originalTarget.copy(controls.target);
   focusTarget.copy(worldPoint);
@@ -277,6 +278,15 @@ function focusOn(worldPoint) {
   targetLookAt.copy(worldPoint);
   isFocused = true; focusLerp = 0;
   controls.autoRotate = false;
+  // Dim all other meshes, keep clicked object sharp
+  window.focusedObject = hitObject;
+  model.traverse(function(c) {
+    if (c.isMesh && c.material && c !== hitObject) {
+      if (!c._origOpacity) c._origOpacity = Array.isArray(c.material) ? c.material[0].opacity : c.material.opacity;
+      const mats = Array.isArray(c.material) ? c.material : [c.material];
+      mats.forEach(function(m) { if (m.opacity !== undefined) m.opacity = 0.25; m.transparent = true; });
+    }
+  });
   blurOverlay.classList.add("show");
   cardsContainer.classList.add("show");
   document.getElementById("close-focus").classList.add("show");
@@ -287,6 +297,16 @@ function unfocus() {
   targetLookAt.copy(originalTarget);
   isFocused = false; focusLerp = 0;
   controls.autoRotate = true;
+  // Restore all material opacity
+  if (model) model.traverse(function(c) {
+    if (c.isMesh && c.material && c._origOpacity !== undefined) {
+      const mats = Array.isArray(c.material) ? c.material : [c.material];
+      mats.forEach(function(m) { m.opacity = c._origOpacity; });
+      delete c._origOpacity;
+    }
+  });
+  window.focusedObject = null;
+  canvas3d.style.filter = "";
   blurOverlay.classList.remove("show");
   cardsContainer.classList.remove("show");
   document.getElementById("close-focus").classList.remove("show");
@@ -317,7 +337,10 @@ loader.load(modelUrl, (gltf) => {
       const g = isGroundMesh(child);
       child.castShadow = !g;
       child.receiveShadow = true;
-      clickable.push(child);
+      // Only allow clicking on named objects (trees, house, cabin parts)
+      const nm = (child.name || "").toLowerCase();
+      const keyword = /house|cabin|tree|pine|trunk|branch|leaf|wood|roof|door|window|wall|plank|beam/;
+      if (!g && keyword.test(nm)) clickable.push(child);
       if (child.material) {
         const mats = Array.isArray(child.material) ? child.material : [child.material];
         mats.forEach((mat) => {
@@ -465,9 +488,11 @@ function animate() {
       isFocused ? targetLookAt : originalTarget,
       t
     );
-    if (canvas3d) {
-      const blurAmt = (isFocused ? t : 1 - t) * 4;
-      canvas3d.style.filter = blurAmt > 0.2 ? "blur(" + blurAmt.toFixed(1) + "px)" : "";
+    if (canvas3d && isFocused && t > 0.5) {
+      // Subtle canvas blur for depth, focused object stays sharp via material override
+      canvas3d.style.filter = "blur(" + ((t - 0.5) * 2 * 2.5).toFixed(1) + "px)";
+    } else if (canvas3d && !isFocused) {
+      canvas3d.style.filter = t < 0.1 ? "" : canvas3d.style.filter;
     }
   }
   controls.update();
