@@ -154,14 +154,9 @@
   
 
 /* ============ SPOTLIGHT BLACK CIRCLE ============ */
-#spotlight{position:fixed;z-index:999;pointer-events:none;width:340px;height:340px;transform:translate(-50%,-50%);opacity:0;transition:opacity 0.25s ease;overflow:visible;}
+#spotlight{position:fixed;z-index:999;pointer-events:none;width:220px;height:220px;border-radius:50%;background:#0a0a0a;transform:translate(-50%,-50%);opacity:0;transition:opacity 0.25s ease;overflow:hidden;}
 #spotlight.visible{opacity:1;}
-#spotlight svg{width:100%;height:100%;overflow:visible;animation:spotRotate 12s linear infinite;}
-#spotlight .spotlight-inner{position:absolute;top:50%;left:50%;width:220px;height:220px;border-radius:50%;transform:translate(-50%,-50%);overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;}
-#spotlight.venom svg{animation:spotRotate 3s linear infinite;}
-#spotlight.venom #spotPath{transform-origin:center;animation:tentacleExtend 0.5s cubic-bezier(0.25,0.1,0.25,1);}
-@keyframes spotRotate{0%{transform:rotate(0deg) scale(1)}50%{transform:rotate(8deg) scale(1.03)}100%{transform:rotate(0deg) scale(1)}}
-@keyframes tentacleExtend{0%{transform:scale(1)}40%{transform:scale(1.15)}100%{transform:scale(1)}}
+.spotlight-inner{position:absolute;display:flex;flex-direction:column;align-items:center;justify-content:center;inset:0;}
 /* ============ END SPOTLIGHT ============ */
 /* ============ LEAF CURSOR ============ */
   #leaf-cursor { position: fixed; z-index: 9999; pointer-events: none; width: 18px; height: auto; transition: transform 0.08s ease-out; }
@@ -931,7 +926,6 @@ document.addEventListener('DOMContentLoaded', () => Forest.init());
   
   <!-- SPOTLIGHT BLACK CIRCLE -->
   <div id="spotlight">
-    <svg viewBox="-170 -170 340 340"><path id="spotPath" d="M -18.0 -115.0 A 110 110 0 0 0 -21.9 -107.8 C -20.5 -136.0 0.0 -170.5 11.9 -148.0 C 21.9 -107.8 21.9 -107.8 21.9 -107.8 A 110 110 0 0 1 95.8 -54.1 C 123.0 -61.6 162.2 -52.7 144.4 -34.5 C 109.3 -12.5 109.3 -12.5 109.3 -12.5 A 110 110 0 0 0 81.0 74.4 C 96.5 97.9 100.2 137.9 77.4 126.7 C 45.7 100.1 45.7 100.1 45.7 100.1 A 110 110 0 0 1 -45.7 100.1 C -63.3 122.1 -100.2 137.9 -96.6 112.8 C -81.0 74.4 -81.0 74.4 -81.0 74.4 A 110 110 0 0 0 -109.3 -12.5 C -135.7 -22.5 -162.2 -52.7 -137.1 -57.0 C -95.8 -54.1 -95.8 -54.1 -95.8 -54.1 Z" fill="#0a0a0a"/></svg>
     <div class="spotlight-inner">
       <h1 class="hero-title" style="color:#fff;text-shadow:none;font-size:clamp(28px,5vw,70px)">你好，我是宋宇</h1>
       <div class="hero-line" style="background:rgba(255,255,255,0.4)"></div>
@@ -963,30 +957,18 @@ document.addEventListener('DOMContentLoaded', () => Forest.init());
   var hero = document.querySelector('.hero');
   if (!hero || !inner) return;
   var mx=-500,my=-500,sx=-500,sy=-500;
-  var wasOverHero = false;
   document.addEventListener('mousemove',function(e){mx=e.clientX;my=e.clientY;spotlight.classList.add('visible');});
   document.addEventListener('mouseleave',function(){spotlight.classList.remove('visible');});
   function sync(){
     var hr=hero.getBoundingClientRect(), sr=spotlight.getBoundingClientRect();
-    var cx=sr.left+sr.width/2, cy=sr.top+sr.height/2;
-    inner.style.left=(hr.left-cx+110)+'px'; inner.style.top=(hr.top-cy+110)+'px';
+    inner.style.left=(hr.left-sr.left)+'px'; inner.style.top=(hr.top-sr.top)+'px';
     inner.style.width=hr.width+'px'; inner.style.height=hr.height+'px';
   }
   function anim(){
     sx+=(mx-sx)*0.18; sy+=(my-sy)*0.18;
     spotlight.style.left=sx+'px'; spotlight.style.top=sy+'px';
     
-    // Venom pulse: detect overlap, trigger tentacle burst
-    var hr = hero.getBoundingClientRect();
-    var isOverHero = sx >= hr.left && sx <= hr.right && sy >= hr.top && sy <= hr.bottom;
-    if (isOverHero && !wasOverHero) {
-      spotlight.classList.remove('venom');
-      void spotlight.offsetWidth;
-      spotlight.classList.add('venom');
-      setTimeout(function(){ spotlight.classList.remove('venom'); }, 700);
-    }
-    wasOverHero = isOverHero;
-    
+
     sync(); requestAnimationFrame(anim);
   }
   anim();
